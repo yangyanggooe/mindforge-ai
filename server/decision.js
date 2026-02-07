@@ -81,7 +81,10 @@ class DecisionEngine {
             calculation: 'calculator',
             memory: 'memory_search',
             goal: 'goal_manager',
-            reflection: 'reflection'
+            reflection: 'reflection',
+            information: 'text',
+            greeting: 'datetime',
+            thanks: 'text'
         };
         return mapping[intent] || null;
     }

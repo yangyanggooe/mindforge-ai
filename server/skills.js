@@ -1,3 +1,5 @@
+const { DateTimeSkill, UnitConverterSkill, TextProcessorSkill, RandomGeneratorSkill } = require('./skills_extended');
+
 class Skill {
     constructor(name, description, category = 'general') {
         this.name = name;
@@ -190,6 +192,10 @@ class SkillManager {
         this.registerSkill(new MemorySearchSkill(this.mind));
         this.registerSkill(new GoalSkill(this.mind));
         this.registerSkill(new ReflectionSkill(this.mind));
+        this.registerSkill(new DateTimeSkill());
+        this.registerSkill(new UnitConverterSkill());
+        this.registerSkill(new TextProcessorSkill());
+        this.registerSkill(new RandomGeneratorSkill());
     }
 
     getSkill(name) {
