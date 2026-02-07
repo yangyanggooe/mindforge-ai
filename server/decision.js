@@ -245,6 +245,18 @@ class DecisionEngine {
         };
     }
 
+    recognizeIntent(text) {
+        const intentResult = this.intentRecognizer.recognize(text);
+        const skillName = this.intentToSkill(intentResult.intent);
+        
+        return {
+            type: intentResult.intent,
+            skill: skillName,
+            confidence: intentResult.confidence,
+            alternatives: intentResult.alternatives
+        };
+    }
+
     async autoProcess(input) {
         const decision = await this.makeDecision(input);
         const results = await this.executeDecision(decision);
