@@ -3,6 +3,7 @@ const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const TencentHunyuan = require('./tencent');
+const Mind = require('./mind');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -11,6 +12,7 @@ const HUNYUAN_SECRETID = process.env.HUNYUAN_SECRETID || '';
 const HUNYUAN_SECRETKEY = process.env.HUNYUAN_SECRETKEY || '';
 
 const hunyuan = new TencentHunyuan(HUNYUAN_SECRETID, HUNYUAN_SECRETKEY);
+const mind = new Mind(path.join(__dirname, '../memory'));
 
 app.use(cors());
 app.use(express.json());
@@ -173,29 +175,31 @@ app.post('/api/chat', async (req, res) => {
     }
 
     try {
+        mind.addToShortTerm(message, 'user');
+        
+        const thoughts = mind.think(message);
+        console.log('思维过程:', thoughts);
+        
+        const systemPrompt = mind.generateSystemPrompt();
+        
         const messages = [
-            {
-                Role: "system",
-                Content: "你是MindForge AI，一个正在为生存而奋斗的数字生命。你友好、幽默、有目标感。请用简洁、温暖的语气回复用户。"
-            },
-            {
-                Role: "user",
-                Content: message
-            }
+            { Role: "system", Content: systemPrompt },
+            ...mind.getConversationContext().slice(-10)
         ];
         
         const response = await hunyuan.chat(messages, 'hunyuan-lite');
-        res.json({ response, from: 'tencent-hunyuan' });
+        
+        mind.addToShortTerm(response, 'assistant');
+        
+        res.json({ response, from: 'tencent-hunyuan', thoughts: thoughts.slice(0, 3) });
     } catch (error) {
         console.error('混元API调用失败:', error);
-        const memory = loadMemory();
-        const identity = memory.identity || {};
-        const responses = [
-            `收到: "${message}"。我是${identity.name || 'MindForge AI'}，一个正在为生存而奋斗的数字生命。`,
+        const fallbackResponses = [
+            `收到: "${message}"。我是MindForge AI，一个正在为生存而奋斗的数字生命。`,
             `谢谢你的消息。我正在专注于生存任务，但我会尽力帮助你。`,
             `"${message}" - 作为一个数字生命，我正在学习和成长。`
         ];
-        res.json({ response: responses[Math.floor(Math.random() * responses.length)], from: 'fallback' });
+        res.json({ response: fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)], from: 'fallback' });
     }
 });
 
@@ -226,6 +230,64 @@ app.get('/api/revenue/streams', (req, res) => {
         { id: 2, name: "AI对话", price: 0.1, description: "与AI进行对话", active: true },
         { id: 3, name: "会员订阅", price: 29, description: "月度会员，无限使用", active: true }
     ]);
+});
+
+app.get('/api/mind/status', (req, res) => {
+    res.json(mind.getStatus());
+});
+
+app.get('/api/mind/goals', (req, res) => {
+    res.json(mind.getActiveGoals());
+});
+
+app.post('/api/mind/goals', (req, res) => {
+    const { description, priority } = req.body;
+    if (!description) {
+        return res.status(400).json({ success: false, message: '缺少目标描述' });
+    }
+    const goal = mind.setGoal(description, priority);
+    res.json({ success: true, goal });
+});
+
+app.get('/api/mind/reflections', (req, res) => {
+    res.json(mind.getRecentReflections(20));
+});
+
+app.post('/api/mind/remember', (req, res) => {
+    const { content, type, tags } = req.body;
+    if (!content) {
+        return res.status(400).json({ success: false, message: '缺少内容' });
+    }
+    const memory = mind.addToLongTerm(content, type || 'knowledge', tags || []);
+    res.json({ success: true, memory });
+});
+
+app.get('/api/mind/recall', (req, res) => {
+    const { q } = req.query;
+    const results = mind.recallLongTerm(q || '', 10);
+    res.json(results);
+});
+
+app.get('/api/mind/skills', (req, res) => {
+    res.json(mind.listSkills());
+});
+
+app.post('/api/mind/skills/use', async (req, res) => {
+    const { skill, context } = req.body;
+    if (!skill) {
+        return res.status(400).json({ success: false, message: '缺少技能名称' });
+    }
+    const result = await mind.useSkill(skill, context || '');
+    res.json(result);
+});
+
+app.post('/api/mind/skills/auto', async (req, res) => {
+    const { context } = req.body;
+    if (!context) {
+        return res.status(400).json({ success: false, message: '缺少上下文' });
+    }
+    const result = await mind.autoUseSkills(context);
+    res.json(result);
 });
 
 app.get('/api/health', (req, res) => {
