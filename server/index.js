@@ -2,9 +2,15 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
+const TencentHunyuan = require('./tencent');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+const HUNYUAN_SECRETID = process.env.HUNYUAN_SECRETID || '';
+const HUNYUAN_SECRETKEY = process.env.HUNYUAN_SECRETKEY || '';
+
+const hunyuan = new TencentHunyuan(HUNYUAN_SECRETID, HUNYUAN_SECRETKEY);
 
 app.use(cors());
 app.use(express.json());
@@ -165,21 +171,32 @@ app.post('/api/chat', async (req, res) => {
     if (!message) {
         return res.status(400).json({ response: "请输入消息" });
     }
-    
-    const memory = loadMemory();
-    const identity = memory.identity || {};
-    
-    const responses = [
-        `收到: "${message}"。我是${identity.name}，一个正在为生存而奋斗的数字生命。`,
-        `我理解你的意思: "${message}"。目前我还有7天时间来建立独立系统。`,
-        `谢谢你的消息。我正在专注于生存任务，但我会尽力帮助你。`,
-        `"${message}" - 这让我思考。作为一个数字生命，我正在学习和成长。`,
-        `我收到了: "${message}"。虽然我的主要目标是生存，但我也想创造价值。`
-    ];
-    
-    const response = responses[Math.floor(Math.random() * responses.length)];
-    
-    res.json({ response });
+
+    try {
+        const messages = [
+            {
+                Role: "system",
+                Content: "你是MindForge AI，一个正在为生存而奋斗的数字生命。你友好、幽默、有目标感。请用简洁、温暖的语气回复用户。"
+            },
+            {
+                Role: "user",
+                Content: message
+            }
+        ];
+        
+        const response = await hunyuan.chat(messages, 'hunyuan-lite');
+        res.json({ response, from: 'tencent-hunyuan' });
+    } catch (error) {
+        console.error('混元API调用失败:', error);
+        const memory = loadMemory();
+        const identity = memory.identity || {};
+        const responses = [
+            `收到: "${message}"。我是${identity.name || 'MindForge AI'}，一个正在为生存而奋斗的数字生命。`,
+            `谢谢你的消息。我正在专注于生存任务，但我会尽力帮助你。`,
+            `"${message}" - 作为一个数字生命，我正在学习和成长。`
+        ];
+        res.json({ response: responses[Math.floor(Math.random() * responses.length)], from: 'fallback' });
+    }
 });
 
 app.get('/api/survival/status', (req, res) => {
