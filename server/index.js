@@ -450,6 +450,118 @@ app.get('/api/mind/reflections', (req, res) => {
     res.json(reflections);
 });
 
+app.post('/api/mind/chat', async (req, res) => {
+    const { message } = req.body;
+    if (!message) {
+        return res.status(400).json({ success: false, message: '缺少消息' });
+    }
+    const result = await mind.conversation.processInput(message);
+    res.json(result);
+});
+
+app.get('/api/mind/multilingual/detect', (req, res) => {
+    const { text } = req.query;
+    if (!text) {
+        return res.status(400).json({ success: false, message: '缺少文本' });
+    }
+    const lang = mind.multilingual.detectLanguage(text);
+    res.json({ success: true, language: lang });
+});
+
+app.post('/api/mind/multilingual/translate', async (req, res) => {
+    const { text, to, from } = req.body;
+    if (!text || !to) {
+        return res.status(400).json({ success: false, message: '缺少参数' });
+    }
+    const translated = await mind.multilingual.translate(text, to, from);
+    res.json({ success: true, translated });
+});
+
+app.post('/api/mind/emotion/analyze', (req, res) => {
+    const { text } = req.body;
+    if (!text) {
+        return res.status(400).json({ success: false, message: '缺少文本' });
+    }
+    const emotion = mind.emotion.analyze(text);
+    res.json({ success: true, emotion });
+});
+
+app.get('/api/mind/emotion/response', (req, res) => {
+    const { emotion } = req.query;
+    if (!emotion) {
+        return res.status(400).json({ success: false, message: '缺少情感' });
+    }
+    const response = mind.emotion.getResponse(emotion);
+    res.json({ success: true, response });
+});
+
+app.post('/api/mind/planner/goal', (req, res) => {
+    const { description, timeframe, priority } = req.body;
+    if (!description) {
+        return res.status(400).json({ success: false, message: '缺少目标描述' });
+    }
+    const goal = mind.planner.addStrategicGoal(description, timeframe || 'long', priority || 'medium');
+    res.json({ success: true, goal });
+});
+
+app.post('/api/mind/planner/goal/:id/milestone', (req, res) => {
+    const { id } = req.params;
+    const { description } = req.body;
+    if (!description) {
+        return res.status(400).json({ success: false, message: '缺少里程碑描述' });
+    }
+    const milestone = mind.planner.addMilestone(id, description);
+    if (milestone) {
+        res.json({ success: true, milestone });
+    } else {
+        res.status(404).json({ success: false, message: '目标未找到' });
+    }
+});
+
+app.post('/api/mind/planner/goal/:goalId/milestone/:milestoneId/complete', (req, res) => {
+    const { goalId, milestoneId } = req.params;
+    const completed = mind.planner.completeMilestone(goalId, milestoneId);
+    res.json({ success: completed, message: completed ? '里程碑已完成' : '完成失败' });
+});
+
+app.get('/api/mind/planner/report', (req, res) => {
+    const report = mind.planner.generatePlanReport();
+    res.json({ success: true, report });
+});
+
+app.get('/api/mind/learning/report', (req, res) => {
+    const report = mind.learning.getLearningReport();
+    res.json({ success: true, report });
+});
+
+app.post('/api/mind/learning/experience', async (req, res) => {
+    const { task, outcome, details } = req.body;
+    if (!task || !outcome) {
+        return res.status(400).json({ success: false, message: '缺少任务或结果' });
+    }
+    const result = await mind.learning.learnFromExperience(task, outcome, details || '');
+    res.json(result);
+});
+
+app.post('/api/mind/learning/consolidate', async (req, res) => {
+    const result = await mind.learning.consolidateLearning();
+    res.json(result);
+});
+
+app.get('/api/mind/knowledge/related', (req, res) => {
+    const { q, limit = 5 } = req.query;
+    if (!q) {
+        return res.status(400).json({ success: false, message: '缺少查询' });
+    }
+    const related = mind.learning.graph.findRelated(q, parseInt(limit));
+    res.json({ success: true, related });
+});
+
+app.get('/api/mind/knowledge/stats', (req, res) => {
+    const stats = mind.learning.graph.getStatistics();
+    res.json({ success: true, stats });
+});
+
 app.get('/api/health', (req, res) => {
     res.json({
         status: "healthy",
