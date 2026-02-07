@@ -698,6 +698,45 @@ app.get('/api/health', (req, res) => {
     });
 });
 
+app.get('/api/health/check', async (req, res) => {
+    const check = mind.systemChecker?.check() || { status: 'unknown' };
+    res.json({ success: true, check });
+});
+
+app.get('/api/health/status', (req, res) => {
+    const status = mind.systemChecker?.getHealthStatus() || { status: 'unknown' };
+    res.json({ success: true, status });
+});
+
+app.get('/api/health/issues', (req, res) => {
+    const issues = mind.systemChecker?.getIssues() || [];
+    res.json({ success: true, issues });
+});
+
+app.post('/api/health/fix', async (req, res) => {
+    const { issue } = req.body;
+    if (!issue) {
+        return res.status(400).json({ success: false, message: '缺少问题类型' });
+    }
+    const result = await mind.autoFixer?.fix(issue) || { success: false, message: '自动修复器未初始化' };
+    res.json({ success: true, result });
+});
+
+app.post('/api/health/autofix', async (req, res) => {
+    const results = await mind.autoFixer?.autoFix() || [];
+    res.json({ success: true, results });
+});
+
+app.post('/api/health/recover', async (req, res) => {
+    const result = await mind.recovery?.checkAndRecover() || { status: 'unknown' };
+    res.json({ success: true, result });
+});
+
+app.post('/api/health/emergency-backup', async (req, res) => {
+    const result = await mind.recovery?.emergencyBackup() || { success: false, message: '恢复系统未初始化' };
+    res.json({ success: true, result });
+});
+
 app.get('/api/skills', (req, res) => {
     const memory = loadMemory();
     res.json(memory.memory?.skills || []);

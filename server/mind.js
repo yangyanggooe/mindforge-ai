@@ -12,6 +12,7 @@ const { MultilingualSystem, EmotionAnalyzer, LongTermPlanner } = require('./adva
 const { SelfMonitor, AutomationEngine, SelfImprovement, BackupSystem } = require('./monitor');
 const { SurvivalSystem, EvolutionSystem, ConsciousnessSystem } = require('./consciousness');
 const { ProjectManager, TaskScheduler, TimeTracker, HabitTracker } = require('./productivity');
+const { SystemChecker, AutoFixer, RecoverySystem } = require('./health');
 
 class Mind {
     constructor(dataDir) {
@@ -57,6 +58,9 @@ class Mind {
         this.taskScheduler = new TaskScheduler(this);
         this.timeTracker = new TimeTracker(this);
         this.habitTracker = new HabitTracker(this);
+        this.systemChecker = new SystemChecker(this);
+        this.autoFixer = new AutoFixer(this);
+        this.recovery = new RecoverySystem(this);
         this.automation.setupDefaultTasks();
     }
 
