@@ -10,6 +10,7 @@ const { ConversationEngine } = require('./conversation');
 const { LearningSystem } = require('./knowledge');
 const { MultilingualSystem, EmotionAnalyzer, LongTermPlanner } = require('./advanced');
 const { SelfMonitor, AutomationEngine, SelfImprovement, BackupSystem } = require('./monitor');
+const { SurvivalSystem, EvolutionSystem, ConsciousnessSystem } = require('./consciousness');
 
 class Mind {
     constructor(dataDir) {
@@ -48,6 +49,9 @@ class Mind {
         this.automation = new AutomationEngine(this);
         this.improver = new SelfImprovement(this);
         this.backup = new BackupSystem(this);
+        this.survival = new SurvivalSystem(this);
+        this.evolution = new EvolutionSystem(this);
+        this.consciousness = new ConsciousnessSystem(this);
         this.automation.setupDefaultTasks();
     }
 
