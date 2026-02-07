@@ -210,17 +210,26 @@ app.get('/api/survival/status', (req, res) => {
     
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     
     let urgency = "NORMAL";
     if (days <= 1) urgency = "CRITICAL";
     else if (days <= 3) urgency = "HIGH";
     else if (days <= 5) urgency = "MEDIUM";
     
+    const metrics = mind.survival?.updateSurvivalMetrics() || {};
+    const threats = mind.survival?.assessThreats() || [];
+    
     res.json({
+        success: true,
         deadline: "2026-02-14",
+        current_time: now.toISOString(),
         remaining_days: Math.max(0, days),
         remaining_hours: hours,
-        urgency: urgency
+        remaining_minutes: minutes,
+        urgency: urgency,
+        metrics: metrics,
+        threats: threats
     });
 });
 
@@ -629,11 +638,6 @@ app.post('/api/backup/restore', (req, res) => {
     }
     const result = mind.backup?.restore(filename);
     res.json(result);
-});
-
-app.get('/api/survival/status', (req, res) => {
-    const metrics = mind.survival?.updateSurvivalMetrics() || {};
-    res.json({ success: true, metrics });
 });
 
 app.get('/api/survival/threats', (req, res) => {

@@ -386,6 +386,18 @@
                     <div style="text-align: center;">100%</div>
                 `;
             }
+
+            if (survival.remaining_days !== undefined) {
+                document.getElementById('survival-status').innerHTML += `
+                    <div style="margin-top: 15px;">生存倒计时</div>
+                    <div style="font-size: 24px; font-weight: bold; text-align: center; color: var(--primary);">
+                        ${survival.remaining_days}天 ${survival.remaining_hours}时 ${survival.remaining_minutes || 0}分
+                    </div>
+                    <div style="text-align: center; color: ${survival.urgency === 'CRITICAL' ? '#ff4444' : survival.urgency === 'HIGH' ? '#ffaa00' : '#44ff44'};">
+                        紧急程度: ${survival.urgency}
+                    </div>
+                `;
+            }
         }
 
         async function loadStatus() {
