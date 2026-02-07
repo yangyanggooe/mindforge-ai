@@ -4,6 +4,7 @@ const { SkillManager } = require('./skills');
 const { DecisionEngine } = require('./decision');
 const { AutonomousLearner } = require('./learning');
 const { GoalPlanner } = require('./planning');
+const { AutonomousExecutor } = require('./execution');
 
 class Mind {
     constructor(dataDir) {
@@ -30,6 +31,7 @@ class Mind {
         this.decisionEngine = new DecisionEngine(this);
         this.learner = new AutonomousLearner(this);
         this.goalPlanner = new GoalPlanner(this);
+        this.executor = new AutonomousExecutor(this);
     }
 
     _loadMemory(filename, defaultVal) {
@@ -313,6 +315,34 @@ ${goalStr}
 
     getNextAction() {
         return this.goalPlanner.getNextAction();
+    }
+
+    startAutonomousMode(intervalMs = 5000) {
+        this.executor.start(intervalMs);
+    }
+
+    stopAutonomousMode() {
+        this.executor.stop();
+    }
+
+    executeTask(type, description, params = {}) {
+        return this.executor.executeTask(type, description, params);
+    }
+
+    executePriorityTask(type, description, params = {}) {
+        return this.executor.executePriorityTask(type, description, params);
+    }
+
+    getExecutorStatus() {
+        return this.executor.getStatus();
+    }
+
+    getHealthReport() {
+        return this.executor.getHealthReport();
+    }
+
+    recordTaskFeedback(taskId, feedback, rating) {
+        return this.executor.recordFeedback(taskId, feedback, rating);
     }
 }
 

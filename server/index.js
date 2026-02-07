@@ -397,6 +397,43 @@ app.post('/api/mind/plan/checkin', async (req, res) => {
     res.json(checkIn);
 });
 
+app.post('/api/mind/executor/start', (req, res) => {
+    const { interval = 5000 } = req.body;
+    mind.startAutonomousMode(parseInt(interval));
+    res.json({ success: true, message: '自主执行系统已启动' });
+});
+
+app.post('/api/mind/executor/stop', (req, res) => {
+    mind.stopAutonomousMode();
+    res.json({ success: true, message: '自主执行系统已停止' });
+});
+
+app.post('/api/mind/executor/task', (req, res) => {
+    const { type, description, params } = req.body;
+    if (!type) {
+        return res.status(400).json({ success: false, message: '缺少任务类型' });
+    }
+    const task = mind.executeTask(type, description || type, params || {});
+    res.json({ success: true, task });
+});
+
+app.get('/api/mind/executor/status', (req, res) => {
+    res.json(mind.getExecutorStatus());
+});
+
+app.get('/api/mind/executor/health', (req, res) => {
+    res.json({ success: true, report: mind.getHealthReport() });
+});
+
+app.post('/api/mind/executor/feedback', (req, res) => {
+    const { taskId, feedback, rating } = req.body;
+    if (!taskId || !feedback || rating === undefined) {
+        return res.status(400).json({ success: false, message: '缺少必要参数' });
+    }
+    const result = mind.recordTaskFeedback(taskId, feedback, parseInt(rating));
+    res.json({ success: true, result });
+});
+
 app.get('/api/health', (req, res) => {
     res.json({
         status: "healthy",
