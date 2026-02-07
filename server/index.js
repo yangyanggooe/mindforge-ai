@@ -562,6 +562,75 @@ app.get('/api/mind/knowledge/stats', (req, res) => {
     res.json({ success: true, stats });
 });
 
+app.get('/api/monitor/status', (req, res) => {
+    const status = mind.selfMonitor?.getStatus() || { status: 'unknown' };
+    res.json(status);
+});
+
+app.get('/api/monitor/report', (req, res) => {
+    const report = mind.selfMonitor?.getSystemReport() || '监控系统未初始化';
+    res.json({ success: true, report });
+});
+
+app.get('/api/monitor/alerts', (req, res) => {
+    const { severity, limit = 20 } = req.query;
+    const alerts = mind.selfMonitor?.getAlerts(severity, parseInt(limit)) || [];
+    res.json(alerts);
+});
+
+app.post('/api/monitor/alert', (req, res) => {
+    const { type, message, severity = 'low' } = req.body;
+    if (!type || !message) {
+        return res.status(400).json({ success: false, message: '缺少类型或消息' });
+    }
+    const alert = mind.selfMonitor?.addAlert(type, message, severity);
+    res.json({ success: true, alert });
+});
+
+app.get('/api/automation/tasks', (req, res) => {
+    const tasks = mind.automation?.tasks ? Array.from(mind.automation.tasks.values()) : [];
+    res.json(tasks);
+});
+
+app.post('/api/automation/start', (req, res) => {
+    mind.automation?.start();
+    res.json({ success: true, message: '自动化引擎已启动' });
+});
+
+app.post('/api/automation/stop', (req, res) => {
+    mind.automation?.stop();
+    res.json({ success: true, message: '自动化引擎已停止' });
+});
+
+app.get('/api/improver/suggestions', (req, res) => {
+    const suggestions = mind.improver?.suggestImprovements() || [];
+    res.json({ success: true, suggestions });
+});
+
+app.get('/api/improver/report', (req, res) => {
+    const report = mind.improver?.generateImprovementReport() || '改进系统未初始化';
+    res.json({ success: true, report });
+});
+
+app.post('/api/backup/create', (req, res) => {
+    const result = mind.backup?.createBackup() || { success: false, error: '备份系统未初始化' };
+    res.json(result);
+});
+
+app.get('/api/backup/list', (req, res) => {
+    const backups = mind.backup?.listBackups() || [];
+    res.json({ success: true, backups });
+});
+
+app.post('/api/backup/restore', (req, res) => {
+    const { filename } = req.body;
+    if (!filename) {
+        return res.status(400).json({ success: false, message: '缺少文件名' });
+    }
+    const result = mind.backup?.restore(filename);
+    res.json(result);
+});
+
 app.get('/api/health', (req, res) => {
     res.json({
         status: "healthy",
