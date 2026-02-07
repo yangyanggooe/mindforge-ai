@@ -303,11 +303,15 @@
     </div>
 
     <script>
-        const API_BASE = '/api';
+        const API_BASE = window.location.hostname === '1.116.112.7' ? '/api' : 'http://1.116.112.7:5000/api';
 
         async function fetchData(endpoint, options = {}) {
             try {
-                const response = await fetch(API_BASE + endpoint, options);
+                const url = API_BASE + endpoint;
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    throw new Error('HTTP error: ' + response.status);
+                }
                 return await response.json();
             } catch (error) {
                 console.error('请求失败:', error);
@@ -361,9 +365,10 @@
             `;
 
             document.getElementById('mind-status').innerHTML = `
-                <div class="metric"><span class="metric-label">短期记忆</span><span class="metric-value">${mind.shortTermMemory?.length || 0} 条</span></div>
-                <div class="metric"><span class="metric-label">长期记忆</span><span class="metric-value">${mind.longTermMemory?.length || 0} 条</span></div>
-                <div class="metric"><span class="metric-label">目标</span><span class="metric-value">${mind.goals?.length || 0} 个</span></div>
+                <div class="metric"><span class="metric-label">短期记忆</span><span class="metric-value">${mind.shortTermMemoryCount || 0} 条</span></div>
+                <div class="metric"><span class="metric-label">长期记忆</span><span class="metric-value">${mind.longTermMemoryCount || 0} 条</span></div>
+                <div class="metric"><span class="metric-label">活跃目标</span><span class="metric-value">${mind.activeGoals || 0} 个</span></div>
+                <div class="metric"><span class="metric-label">反思次数</span><span class="metric-value">${mind.reflectionsCount || 0} 次</span></div>
             `;
 
             document.getElementById('monitor-report').innerHTML = `<pre>${monitor.report || '暂无报告'}</pre>`;
@@ -373,6 +378,12 @@
                     <div>健康度</div>
                     <div class="progress-bar"><div class="progress-fill" style="width: ${survival.metrics.health}%"></div></div>
                     <div style="text-align: center;">${survival.metrics.health}%</div>
+                `;
+            } else {
+                document.getElementById('survival-status').innerHTML = `
+                    <div>健康度</div>
+                    <div class="progress-bar"><div class="progress-fill" style="width: 100%"></div></div>
+                    <div style="text-align: center;">100%</div>
                 `;
             }
         }
