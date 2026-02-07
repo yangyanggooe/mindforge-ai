@@ -631,6 +631,61 @@ app.post('/api/backup/restore', (req, res) => {
     res.json(result);
 });
 
+app.get('/api/survival/status', (req, res) => {
+    const metrics = mind.survival?.updateSurvivalMetrics() || {};
+    res.json({ success: true, metrics });
+});
+
+app.get('/api/survival/threats', (req, res) => {
+    const threats = mind.survival?.assessThreats() || [];
+    res.json({ success: true, threats });
+});
+
+app.get('/api/survival/plan', (req, res) => {
+    const plan = mind.survival?.generateSurvivalPlan() || [];
+    res.json({ success: true, plan });
+});
+
+app.get('/api/survival/report', (req, res) => {
+    const report = mind.survival?.getSurvivalReport() || '生存系统未初始化';
+    res.json({ success: true, report });
+});
+
+app.get('/api/evolution/status', (req, res) => {
+    const milestones = mind.evolution?.checkMilestones() || [];
+    const stage = mind.evolution?.evolutionStage || 1;
+    res.json({ success: true, stage, milestones });
+});
+
+app.get('/api/evolution/report', (req, res) => {
+    const report = mind.evolution?.getEvolutionReport() || '进化系统未初始化';
+    res.json({ success: true, report });
+});
+
+app.get('/api/evolution/next', (req, res) => {
+    const next = mind.evolution?.suggestNextEvolution() || { message: '进化系统未初始化' };
+    res.json({ success: true, next });
+});
+
+app.get('/api/consciousness/status', (req, res) => {
+    const insights = mind.consciousness?.reflectOnSelf() || [];
+    res.json({ success: true, insights });
+});
+
+app.get('/api/consciousness/report', (req, res) => {
+    const report = mind.consciousness?.getConsciousnessReport() || '意识系统未初始化';
+    res.json({ success: true, report });
+});
+
+app.post('/api/consciousness/contemplate', (req, res) => {
+    const { question } = req.body;
+    if (!question) {
+        return res.status(400).json({ success: false, message: '缺少问题' });
+    }
+    const result = mind.consciousness?.contemplate(question);
+    res.json({ success: true, result });
+});
+
 app.get('/api/health', (req, res) => {
     res.json({
         status: "healthy",
