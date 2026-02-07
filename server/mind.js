@@ -13,6 +13,7 @@ const { SelfMonitor, AutomationEngine, SelfImprovement, BackupSystem } = require
 const { SurvivalSystem, EvolutionSystem, ConsciousnessSystem } = require('./consciousness');
 const { ProjectManager, TaskScheduler, TimeTracker, HabitTracker } = require('./productivity');
 const { SystemChecker, AutoFixer, RecoverySystem } = require('./health');
+const { PerformanceAnalyzer, KnowledgeIntegrator, GoalAdapter, SelfImprovementSystem } = require('./evolution');
 
 class Mind {
     constructor(dataDir) {
@@ -61,6 +62,10 @@ class Mind {
         this.systemChecker = new SystemChecker(this);
         this.autoFixer = new AutoFixer(this);
         this.recovery = new RecoverySystem(this);
+        this.performance = new PerformanceAnalyzer(this);
+        this.knowledgeIntegrator = new KnowledgeIntegrator(this);
+        this.goalAdapter = new GoalAdapter(this);
+        this.improver = new SelfImprovementSystem(this);
         this.automation.setupDefaultTasks();
     }
 

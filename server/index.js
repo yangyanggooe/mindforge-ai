@@ -737,6 +737,47 @@ app.post('/api/health/emergency-backup', async (req, res) => {
     res.json({ success: true, result });
 });
 
+app.get('/api/evolution/analysis', (req, res) => {
+    const analysis = mind.improver?.analyzeSystem() || {};
+    res.json({ success: true, analysis });
+});
+
+app.get('/api/evolution/plan', (req, res) => {
+    const plan = mind.improver?.generateImprovementPlan() || [];
+    res.json({ success: true, plan });
+});
+
+app.post('/api/evolution/improve', async (req, res) => {
+    const result = await mind.improver?.runImprovementCycle() || { success: false, message: '改进系统未初始化' };
+    res.json({ success: true, result });
+});
+
+app.get('/api/evolution/report', (req, res) => {
+    const report = mind.improver?.getImprovementReport() || '改进系统未初始化';
+    res.json({ success: true, report });
+});
+
+app.get('/api/evolution/performance', (req, res) => {
+    const analysis = mind.performance?.getFullAnalysis() || {};
+    res.json({ success: true, analysis });
+});
+
+app.get('/api/evolution/knowledge', (req, res) => {
+    const graph = mind.knowledgeIntegrator?.getKnowledgeGraph() || {};
+    res.json({ success: true, graph });
+});
+
+app.get('/api/evolution/insights', (req, res) => {
+    const insights = mind.knowledgeIntegrator?.generateInsights() || [];
+    res.json({ success: true, insights });
+});
+
+app.get('/api/evolution/goals', (req, res) => {
+    const adaptations = mind.goalAdapter?.adaptGoals() || [];
+    const suggestions = mind.goalAdapter?.suggestNewGoals() || [];
+    res.json({ success: true, adaptations, suggestions });
+});
+
 app.get('/api/skills', (req, res) => {
     const memory = loadMemory();
     res.json(memory.memory?.skills || []);
