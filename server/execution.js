@@ -333,7 +333,7 @@ class SystemMonitor {
     }
 
     getSystemStatus() {
-        const queueStatus = this.mind.executor ? this.mind.executor.getQueueStatus() : null;
+        const queueStatus = this.mind.executor ? this.mind.executor.executor.getQueueStatus() : null;
         const learningStats = this.mind.getLearningStats();
         const decisionStats = this.mind.getDecisionStats();
         const planSummary = this.mind.getPlanSummary();
