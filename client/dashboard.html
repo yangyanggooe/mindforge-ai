@@ -398,7 +398,7 @@
 
             document.getElementById('server-status').innerHTML = `
                 <div class="metric"><span class="metric-label">状态</span><span class="metric-value">${monitor.status || 'unknown'}</span></div>
-                <div class="metric"><span class="metric-label">运行时间</span><span class="metric-value">${Math.floor((monitor.uptime || 0) / 1000 / 60} 分钟</span></div>
+                <div class="metric"><span class="metric-label">运行时间</span><span class="metric-value">${Math.floor((monitor.uptime || 0) / 1000 / 60)} 分钟</span></div>
                 <div class="metric"><span class="metric-label">请求数</span><span class="metric-value">${monitor.requests || 0}</span></div>
             `;
 
