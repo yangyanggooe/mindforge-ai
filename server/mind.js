@@ -5,6 +5,7 @@ const { DecisionEngine } = require('./decision');
 const { AutonomousLearner } = require('./learning');
 const { GoalPlanner } = require('./planning');
 const { AutonomousExecutor } = require('./execution');
+const { CognitiveArchitecture } = require('./cognitive');
 
 class Mind {
     constructor(dataDir) {
@@ -32,6 +33,8 @@ class Mind {
         this.learner = new AutonomousLearner(this);
         this.goalPlanner = new GoalPlanner(this);
         this.executor = new AutonomousExecutor(this);
+        this.cognitive = new CognitiveArchitecture(this);
+        this.cognitive.initialize();
     }
 
     _loadMemory(filename, defaultVal) {
