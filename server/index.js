@@ -358,6 +358,45 @@ app.get('/api/mind/learning-stats', (req, res) => {
     res.json(mind.getLearningStats());
 });
 
+app.post('/api/mind/goals/create', (req, res) => {
+    const { description, priority, deadline } = req.body;
+    if (!description) {
+        return res.status(400).json({ success: false, message: '缺少目标描述' });
+    }
+    const goal = mind.createGoal(description, priority || 'medium', deadline);
+    res.json({ success: true, goal });
+});
+
+app.post('/api/mind/goals/:id/progress', (req, res) => {
+    const { id } = req.params;
+    const { progress, notes } = req.body;
+    if (progress === undefined) {
+        return res.status(400).json({ success: false, message: '缺少进度值' });
+    }
+    const result = mind.updateGoalProgress(id, progress, notes || '');
+    res.json(result);
+});
+
+app.get('/api/mind/plan/summary', (req, res) => {
+    res.json(mind.getPlanSummary());
+});
+
+app.get('/api/mind/plan/daily', (req, res) => {
+    const { time = 120 } = req.query;
+    const plan = mind.generateDailyPlan(parseInt(time));
+    res.json({ success: true, plan });
+});
+
+app.get('/api/mind/plan/next-action', (req, res) => {
+    const nextAction = mind.getNextAction();
+    res.json({ success: true, nextAction });
+});
+
+app.post('/api/mind/plan/checkin', async (req, res) => {
+    const checkIn = await mind.checkIn();
+    res.json(checkIn);
+});
+
 app.get('/api/health', (req, res) => {
     res.json({
         status: "healthy",

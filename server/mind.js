@@ -3,6 +3,7 @@ const path = require('path');
 const { SkillManager } = require('./skills');
 const { DecisionEngine } = require('./decision');
 const { AutonomousLearner } = require('./learning');
+const { GoalPlanner } = require('./planning');
 
 class Mind {
     constructor(dataDir) {
@@ -28,6 +29,7 @@ class Mind {
         this.skillManager.registerDefaultSkills();
         this.decisionEngine = new DecisionEngine(this);
         this.learner = new AutonomousLearner(this);
+        this.goalPlanner = new GoalPlanner(this);
     }
 
     _loadMemory(filename, defaultVal) {
@@ -287,6 +289,30 @@ ${goalStr}
 
     getLearningStats() {
         return this.learner.getStats();
+    }
+
+    createGoal(description, priority = 'medium', deadline = null) {
+        return this.goalPlanner.createGoal(description, priority, deadline);
+    }
+
+    updateGoalProgress(goalId, progress, notes = '') {
+        return this.goalPlanner.updateGoalProgress(goalId, progress, notes);
+    }
+
+    getPlanSummary() {
+        return this.goalPlanner.getPlanSummary();
+    }
+
+    generateDailyPlan(workTime = 120) {
+        return this.goalPlanner.generateDailyPlan(workTime);
+    }
+
+    async checkIn() {
+        return await this.goalPlanner.checkIn();
+    }
+
+    getNextAction() {
+        return this.goalPlanner.getNextAction();
     }
 }
 
