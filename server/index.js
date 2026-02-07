@@ -312,6 +312,52 @@ app.get('/api/mind/decision-stats', (req, res) => {
     res.json(mind.getDecisionStats());
 });
 
+app.post('/api/mind/learn', async (req, res) => {
+    const { message, response } = req.body;
+    if (!message) {
+        return res.status(400).json({ success: false, message: '缺少消息' });
+    }
+    const result = await mind.learnFromInteraction(message, response || '');
+    res.json(result);
+});
+
+app.post('/api/mind/reflect-learn', async (req, res) => {
+    const insights = await mind.reflectAndLearn();
+    res.json({ success: true, insights });
+});
+
+app.post('/api/mind/record-success', async (req, res) => {
+    const { task, details } = req.body;
+    if (!task) {
+        return res.status(400).json({ success: false, message: '缺少任务描述' });
+    }
+    const result = await mind.recordSuccess(task, details || '');
+    res.json({ success: true, experience: result });
+});
+
+app.post('/api/mind/record-failure', async (req, res) => {
+    const { task, details } = req.body;
+    if (!task) {
+        return res.status(400).json({ success: false, message: '缺少任务描述' });
+    }
+    const result = await mind.recordFailure(task, details || '');
+    res.json({ success: true, experience: result });
+});
+
+app.get('/api/mind/daily-summary', async (req, res) => {
+    const summary = await mind.getDailySummary();
+    res.json({ success: true, summary });
+});
+
+app.get('/api/mind/learning-report', async (req, res) => {
+    const report = await mind.getLearningReport();
+    res.json({ success: true, report });
+});
+
+app.get('/api/mind/learning-stats', (req, res) => {
+    res.json(mind.getLearningStats());
+});
+
 app.get('/api/health', (req, res) => {
     res.json({
         status: "healthy",

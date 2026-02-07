@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { SkillManager } = require('./skills');
 const { DecisionEngine } = require('./decision');
+const { AutonomousLearner } = require('./learning');
 
 class Mind {
     constructor(dataDir) {
@@ -26,6 +27,7 @@ class Mind {
         this.skillManager = new SkillManager(this);
         this.skillManager.registerDefaultSkills();
         this.decisionEngine = new DecisionEngine(this);
+        this.learner = new AutonomousLearner(this);
     }
 
     _loadMemory(filename, defaultVal) {
@@ -257,6 +259,34 @@ ${goalStr}
 
     getDecisionStats() {
         return this.decisionEngine.getDecisionStats();
+    }
+
+    async learnFromInteraction(message, response) {
+        return await this.learner.learnFromInteraction(message, response);
+    }
+
+    async reflectAndLearn() {
+        return await this.learner.reflectAndLearn();
+    }
+
+    async recordSuccess(task, details = '') {
+        return await this.learner.recordSuccess(task, details);
+    }
+
+    async recordFailure(task, details = '') {
+        return await this.learner.recordFailure(task, details);
+    }
+
+    async getDailySummary() {
+        return await this.learner.getDailySummary();
+    }
+
+    async getLearningReport() {
+        return await this.learner.getLearningReport();
+    }
+
+    getLearningStats() {
+        return this.learner.getStats();
     }
 }
 

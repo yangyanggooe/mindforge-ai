@@ -145,6 +145,13 @@
                     <div style="color: #8892b0;">加载中...</div>
                 </div>
             </div>
+
+            <div class="card">
+                <h3>📚 学习系统</h3>
+                <div id="learning-stats" style="margin-top: 10px;">
+                    <div style="color: #8892b0;">加载中...</div>
+                </div>
+            </div>
         </div>
 
         <div class="status-panel">
@@ -287,6 +294,32 @@
                 `;
             } catch (e) {
                 console.error('加载决策统计失败:', e);
+            }
+
+            try {
+                const learningResponse = await fetch(`${API_BASE}/mind/learning-stats');
+                const learningStats = await learningResponse.json();
+                const learningDiv = document.getElementById('learning-stats');
+                learningDiv.innerHTML = `
+                    <div class="metric">
+                        <span class="metric-label">学习会话</span>
+                        <span class="metric-value">${learningStats.learningSessions || 0}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">总记忆数</span>
+                        <span class="metric-value">${learningStats.totalMemory || 0}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">反思次数</span>
+                        <span class="metric-value">${learningStats.totalReflections || 0}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">活跃目标</span>
+                        <span class="metric-value">${learningStats.activeGoals || 0}</span>
+                    </div>
+                `;
+            } catch (e) {
+                console.error('加载学习统计失败:', e);
             }
         }
 
