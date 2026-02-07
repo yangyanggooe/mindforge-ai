@@ -290,6 +290,28 @@ app.post('/api/mind/skills/auto', async (req, res) => {
     res.json(result);
 });
 
+app.post('/api/mind/decide', async (req, res) => {
+    const { input } = req.body;
+    if (!input) {
+        return res.status(400).json({ success: false, message: '缺少输入' });
+    }
+    const decision = await mind.makeDecision(input);
+    res.json(decision);
+});
+
+app.post('/api/mind/auto', async (req, res) => {
+    const { input } = req.body;
+    if (!input) {
+        return res.status(400).json({ success: false, message: '缺少输入' });
+    }
+    const result = await mind.autoProcess(input);
+    res.json(result);
+});
+
+app.get('/api/mind/decision-stats', (req, res) => {
+    res.json(mind.getDecisionStats());
+});
+
 app.get('/api/health', (req, res) => {
     res.json({
         status: "healthy",

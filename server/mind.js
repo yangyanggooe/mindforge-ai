@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { SkillManager } = require('./skills');
+const { DecisionEngine } = require('./decision');
 
 class Mind {
     constructor(dataDir) {
@@ -24,6 +25,7 @@ class Mind {
         this.maxShortTermMemory = 50;
         this.skillManager = new SkillManager(this);
         this.skillManager.registerDefaultSkills();
+        this.decisionEngine = new DecisionEngine(this);
     }
 
     _loadMemory(filename, defaultVal) {
@@ -243,6 +245,18 @@ ${goalStr}
 
     async autoUseSkills(context) {
         return await this.skillManager.autoExecute(context);
+    }
+
+    async makeDecision(input) {
+        return await this.decisionEngine.makeDecision(input);
+    }
+
+    async autoProcess(input) {
+        return await this.decisionEngine.autoProcess(input);
+    }
+
+    getDecisionStats() {
+        return this.decisionEngine.getDecisionStats();
     }
 }
 
