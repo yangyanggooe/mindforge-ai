@@ -8,6 +8,7 @@ const { AutonomousExecutor } = require('./execution');
 const { CognitiveArchitecture } = require('./cognitive');
 const { ConversationEngine } = require('./conversation');
 const { LearningSystem } = require('./knowledge');
+const { MultilingualSystem, EmotionAnalyzer, LongTermPlanner } = require('./advanced');
 
 class Mind {
     constructor(dataDir) {
@@ -39,6 +40,9 @@ class Mind {
         this.cognitive.initialize();
         this.conversation = new ConversationEngine(this);
         this.learning = new LearningSystem(this);
+        this.multilingual = new MultilingualSystem(this);
+        this.emotion = new EmotionAnalyzer();
+        this.planner = new LongTermPlanner(this);
     }
 
     _loadMemory(filename, defaultVal) {
