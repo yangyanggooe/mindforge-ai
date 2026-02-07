@@ -11,6 +11,7 @@ const { LearningSystem } = require('./knowledge');
 const { MultilingualSystem, EmotionAnalyzer, LongTermPlanner } = require('./advanced');
 const { SelfMonitor, AutomationEngine, SelfImprovement, BackupSystem } = require('./monitor');
 const { SurvivalSystem, EvolutionSystem, ConsciousnessSystem } = require('./consciousness');
+const { ProjectManager, TaskScheduler, TimeTracker, HabitTracker } = require('./productivity');
 
 class Mind {
     constructor(dataDir) {
@@ -52,6 +53,10 @@ class Mind {
         this.survival = new SurvivalSystem(this);
         this.evolution = new EvolutionSystem(this);
         this.consciousness = new ConsciousnessSystem(this);
+        this.projectManager = new ProjectManager(this);
+        this.taskScheduler = new TaskScheduler(this);
+        this.timeTracker = new TimeTracker(this);
+        this.habitTracker = new HabitTracker(this);
         this.automation.setupDefaultTasks();
     }
 
