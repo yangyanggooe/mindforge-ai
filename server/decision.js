@@ -29,6 +29,9 @@ class IntentRecognizer {
             thanks: [
                 /谢谢|感谢|多谢|谢谢了|辛苦了/
             ],
+            time: [
+                /时间|几点|日期|星期|年月日|现在|today|date|time/i
+            ],
             command: [
                 /执行|运行|开始|停止|重启/,
                 /帮我|请你|能不能|可以吗/
@@ -84,7 +87,11 @@ class DecisionEngine {
             reflection: 'reflection',
             information: 'text',
             greeting: 'datetime',
-            thanks: 'text'
+            thanks: 'text',
+            time: 'datetime',
+            conversion: 'converter',
+            text: 'text',
+            random: 'random'
         };
         return mapping[intent] || null;
     }
