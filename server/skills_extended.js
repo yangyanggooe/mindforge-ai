@@ -6,6 +6,20 @@ class DateTimeSkill {
         this.enabled = true;
     }
 
+    toJSON() {
+        return {
+            name: this.name,
+            description: this.description,
+            category: 'utility',
+            enabled: this.enabled,
+            usageCount: this.usageCount
+        };
+    }
+
+    canExecute(context) {
+        return this.enabled;
+    }
+
     execute(context) {
         this.usageCount++;
         const now = new Date();
@@ -250,6 +264,20 @@ class UnitConverterSkill {
         };
     }
 
+    toJSON() {
+        return {
+            name: this.name,
+            description: this.description,
+            category: 'utility',
+            enabled: this.enabled,
+            usageCount: this.usageCount
+        };
+    }
+
+    canExecute(context) {
+        return this.enabled;
+    }
+
     execute(context) {
         this.usageCount++;
         
@@ -395,6 +423,20 @@ class TextProcessorSkill {
         this.enabled = true;
     }
 
+    toJSON() {
+        return {
+            name: this.name,
+            description: this.description,
+            category: 'utility',
+            enabled: this.enabled,
+            usageCount: this.usageCount
+        };
+    }
+
+    canExecute(context) {
+        return this.enabled;
+    }
+
     execute(context) {
         this.usageCount++;
         
@@ -455,6 +497,20 @@ class RandomGeneratorSkill {
         this.description = '随机数生成、随机选择、密码生成';
         this.usageCount = 0;
         this.enabled = true;
+    }
+
+    toJSON() {
+        return {
+            name: this.name,
+            description: this.description,
+            category: 'utility',
+            enabled: this.enabled,
+            usageCount: this.usageCount
+        };
+    }
+
+    canExecute(context) {
+        return this.enabled;
     }
 
     execute(context) {
