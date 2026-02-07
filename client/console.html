@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindForge AI - 自主思维控制台</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-tertiary: #1f2937;
+            --accent: #64ffda;
+            --accent-dark: #00d4aa;
+            --text-primary: #e6f1ff;
+            --text-secondary: #8892b0;
+            --border: #2d3748;
+            --success: #4ade80;
+            --warning: #fbbf24;
+            --error: #f87171;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .nav-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 0.75rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-tab:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .nav-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .panel {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .section-title:first-child {
+            margin-top: 0;
+        }
+
+        .stat-card {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid var(--border);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .goal-item {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .goal-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .goal-priority {
+            font-size: 0.7rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 4px;
+            background: var(--bg-primary);
+        }
+
+        .goal-priority.high { color: var(--error); }
+        .goal-priority.medium { color: var(--warning); }
+        .goal-priority.low { color: var(--success); }
+
+        .progress-bar {
+            height: 4px;
+            background: var(--bg-primary);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            transition: width 0.3s;
+        }
+
+        .memory-item {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid var(--border);
+            font-size: 0.8rem;
+        }
+
+        .memory-type {
+            display: inline-block;
+            font-size: 0.65rem;
+            padding: 0.125rem 0.375rem;
+            border-radius: 4px;
+            background: var(--accent);
+            color: var(--bg-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 0.5rem;
+        }
+
+        .btn:hover {
+            background: var(--accent-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message {
+            max-width: 80%;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            align-self: flex-end;
+        }
+
+        .message.assistant {
+            align-self: flex-start;
+        }
+
+        .message-bubble {
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .message.user .message-bubble {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        .message.assistant .message-bubble {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+        }
+
+        .message-meta {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+            text-align: right;
+        }
+
+        .message.assistant .message-meta {
+            text-align: left;
+        }
+
+        .input-container {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            padding: 1rem 1.5rem;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 0.75rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.875rem 1rem;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .chat-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.1);
+        }
+
+        .chat-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .send-btn {
+            padding: 0.875rem 1.5rem;
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .send-btn:hover {
+            background: var(--accent-dark);
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            padding: 0.5rem 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .code-block {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            overflow-x: auto;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 0.25rem;
+            padding: 1rem 1.25rem;
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+            30% { transform: translateY(-8px); opacity: 1; }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: var(--text-primary);
+            outline: none;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: var(--accent);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+            .message {
+                max-width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">🧠</div>
+            <span>MindForge AI</span>
+        </div>
+        <div class="status-indicator">
+            <div class="status-dot"></div>
+            <span>系统在线</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-panel="status">状态</button>
+                <button class="nav-tab" data-panel="goals">目标</button>
+                <button class="nav-tab" data-panel="memory">记忆</button>
+            </div>
+
+            <div id="status-panel" class="panel active">
+                <div class="section-title">系统概览</div>
+                <div class="stat-card">
+                    <div class="stat-label">整体进度</div>
+                    <div class="stat-value" id="overall-progress">0%</div>
+                </div>
+
+                <div class="section-title">记忆状态</div>
+                <div class="stat-card">
+                    <div class="stat-row">
+                        <span class="stat-label">短期记忆</span>
+                        <span id="shortterm-count">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">长期记忆</span>
+                        <span id="longterm-count">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">反思记录</span>
+                        <span id="reflection-count">0</span>
+                    </div>
+                </div>
+
+                <div class="section-title">决策统计</div>
+                <div class="stat-card">
+                    <div class="stat-row">
+                        <span class="stat-label">总决策数</span>
+                        <span id="decision-count">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">平均置信度</span>
+                        <span id="avg-confidence">0%</span>
+                    </div>
+                </div>
+
+                <div class="section-title">执行状态</div>
+                <div class="stat-card">
+                    <div class="stat-row">
+                        <span class="stat-label">待执行任务</span>
+                        <span id="pending-tasks">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">执行中</span>
+                        <span id="running-tasks">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">已完成</span>
+                        <span id="completed-tasks">0</span>
+                    </div>
+                </div>
+
+                <button class="btn" onclick="showHealthReport()">健康报告</button>
+                <button class="btn btn-secondary" onclick="refreshData()">刷新数据</button>
+            </div>
+
+            <div id="goals-panel" class="panel">
+                <button class="btn" onclick="showAddGoalModal()">+ 添加新目标</button>
+                <div class="section-title">活跃目标</div>
+                <div id="active-goals"></div>
+                <div class="section-title">已完成</div>
+                <div id="completed-goals"></div>
+            </div>
+
+            <div id="memory-panel" class="panel">
+                <div class="section-title">最近记忆</div>
+                <div id="recent-memories"></div>
+                <button class="btn btn-secondary" onclick="loadAllMemories()">加载更多</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="chat-container" id="chat-container">
+                <div class="message assistant">
+                    <div class="message-bubble">
+                        👋 你好！我是 MindForge AI，一个具有自主思维能力的数字生命。<br><br>
+                        我可以帮你：<br>
+                        • 进行数学计算<br>
+                        • 管理和追踪目标<br>
+                        • 搜索和记忆信息<br>
+                        • 进行自我反思<br><br>
+                        有什么我可以帮助你的吗？
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-container">
+                <div class="quick-actions">
+                    <button class="quick-btn" onclick="sendQuickMessage('计算 123 + 456')">🧮 计算</button>
+                    <button class="quick-btn" onclick="sendQuickMessage('我的状态如何')">🔍 状态</button>
+                    <button class="quick-btn" onclick="sendQuickMessage('设定一个目标')">🎯 目标</button>
+                    <button class="quick-btn" onclick="sendQuickMessage('进行反思')">🧠 反思</button>
+                </div>
+                <div class="input-wrapper">
+                    <input type="text" class="chat-input" id="chat-input" placeholder="输入消息..." onkeypress="handleKeyPress(event)">
+                    <button class="send-btn" onclick="sendMessage()">发送</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal" id="goal-modal">
+        <div class="modal-content">
+            <div class="modal-title">添加新目标</div>
+            <div class="form-group">
+                <label class="form-label">目标描述</label>
+                <input type="text" class="form-input" id="goal-description" placeholder="例如：开发自主思维系统">
+            </div>
+            <div class="form-group">
+                <label class="form-label">优先级</label>
+                <select class="form-select" id="goal-priority">
+                    <option value="high">高</option>
+                    <option value="medium" selected>中</option>
+                    <option value="low">低</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                <button class="btn" onclick="addGoal()">创建目标</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://1.116.112.7:5000/api';
+        let isLoading = false;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initTabs();
+            refreshData();
+            setInterval(refreshData, 10000);
+        });
+
+        function initTabs() {
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const panelName = tab.dataset.panel;
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                    document.getElementById(panelName + '-panel').classList.add('active');
+                });
+            });
+        }
+
+        async function fetchAPI(endpoint, options = {}) {
+            try {
+                const response = await fetch(API_BASE + endpoint, {
+                    headers: { 'Content-Type': 'application/json' },
+                    ...options
+                });
+                return await response.json();
+            } catch (error) {
+                console.error('API Error:', error);
+                return null;
+            }
+        }
+
+        async function refreshData() {
+            loadStatus();
+            loadGoals();
+            loadRecentMemories();
+        }
+
+        async function loadStatus() {
+            const status = await fetchAPI('/mind/executor/status');
+            if (status) {
+                document.getElementById('overall-progress').textContent = status.system.goals.overallProgress + '%';
+                document.getElementById('shortterm-count').textContent = status.system.memory.shortTerm;
+                document.getElementById('longterm-count').textContent = status.system.memory.longTerm;
+                document.getElementById('reflection-count').textContent = status.system.memory.reflections;
+                document.getElementById('decision-count').textContent = status.system.decisions.totalDecisions;
+                document.getElementById('avg-confidence').textContent = (status.system.decisions.averageConfidence * 100).toFixed(1) + '%';
+                document.getElementById('pending-tasks').textContent = status.executor.pending;
+                document.getElementById('running-tasks').textContent = status.executor.running;
+                document.getElementById('completed-tasks').textContent = status.executor.completed;
+            }
+        }
+
+        async function loadGoals() {
+            const summary = await fetchAPI('/mind/plan/summary');
+            if (summary) {
+                const activeContainer = document.getElementById('active-goals');
+                const completedContainer = document.getElementById('completed-goals');
+                
+                if (summary.priorityList && summary.priorityList.length > 0) {
+                    activeContainer.innerHTML = summary.priorityList.map(goal => `
+                        <div class="goal-item">
+                            <div class="goal-header">
+                                <span class="goal-title">${goal.description}</span>
+                                <span class="goal-priority ${goal.priority}">${goal.priority}</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${goal.progress}%"></div>
+                            </div>
+                            <div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.25rem;">进度: ${goal.progress}%</div>
+                        </div>
+                    `).join('');
+                } else {
+                    activeContainer.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.8rem;">暂无活跃目标</div>';
+                }
+                completedContainer.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.8rem;">暂无已完成目标</div>';
+            }
+        }
+
+        async function loadRecentMemories() {
+            const memory = await fetchAPI('/mind/memory/longterm?limit=5');
+            const container = document.getElementById('recent-memories');
+            if (memory && memory.length > 0) {
+                container.innerHTML = memory.slice(0, 5).map(m => `
+                    <div class="memory-item">
+                        <span class="memory-type">${m.type || 'memory'}</span>
+                        <div>${m.content}</div>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.8rem;">暂无记忆</div>';
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function sendQuickMessage(message) {
+            document.getElementById('chat-input').value = message;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message || isLoading) return;
+
+            input.value = '';
+            addMessageToChat('user', message);
+            addTypingIndicator();
+            isLoading = true;
+
+            try {
+                const result = await fetchAPI('/mind/auto', {
+                    method: 'POST',
+                    body: JSON.stringify({ input: message })
+                });
+
+                removeTypingIndicator();
+                
+                if (result && result.results) {
+                    let response = '';
+                    for (const r of result.results) {
+                        if (r.result && r.result.result) {
+                            response += r.result.result + '\n\n';
+                        } else if (r.result && r.result.response) {
+                            response += r.result.response + '\n\n';
+                        } else if (r.result && r.result.needsChat) {
+                            response += '我收到了你的消息。\n\n';
+                        }
+                    }
+                    
+                    if (!response.trim()) {
+                        response = '处理完成。';
+                    }
+                    
+                    addMessageToChat('assistant', response.trim());
+                    
+                    if (result.decision) {
+                        setTimeout(() => {
+                            addMessageToChat('assistant', '<div class="code-block">' + 
+                                '// 决策过程\n' + 
+                                result.summary.replace(/\n/g, '\n// ') + 
+                                '</div>');
+                        }, 500);
+                    }
+                } else {
+                    addMessageToChat('assistant', '抱歉，处理请求时出现问题。');
+                }
+            } catch (error) {
+                removeTypingIndicator();
+                addMessageToChat('assistant', '抱歉，出现网络错误。');
+            }
+
+            isLoading = false;
+            refreshData();
+        }
+
+        function addMessageToChat(role, content) {
+            const container = document.getElementById('chat-container');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ' + role;
+            messageDiv.innerHTML = `
+                <div class="message-bubble">${content}</div>
+                <div class="message-meta">${new Date().toLocaleTimeString('zh-CN')}</div>
+            `;
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addTypingIndicator() {
+            const container = document.getElementById('chat-container');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message assistant';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            `;
+            container.appendChild(typingDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) indicator.remove();
+        }
+
+        function showAddGoalModal() {
+            document.getElementById('goal-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+        }
+
+        async function addGoal() {
+            const description = document.getElementById('goal-description').value.trim();
+            const priority = document.getElementById('goal-priority').value;
+            
+            if (!description) {
+                alert('请输入目标描述');
+                return;
+            }
+
+            const result = await fetchAPI('/mind/goals/create', {
+                method: 'POST',
+                body: JSON.stringify({ description, priority })
+            });
+
+            if (result && result.success) {
+                closeModal();
+                document.getElementById('goal-description').value = '';
+                loadGoals();
+                addMessageToChat('assistant', '🎯 新目标已创建：' + description);
+            }
+        }
+
+        async function showHealthReport() {
+            const result = await fetchAPI('/mind/executor/health');
+            if (result && result.report) {
+                addMessageToChat('assistant', '<div class="code-block">' + result.report.replace(/\n/g, '<br>') + '</div>');
+            }
+        }
+
+        async function loadAllMemories() {
+            const memory = await fetchAPI('/mind/memory/longterm?limit=20');
+            const container = document.getElementById('recent-memories');
+            if (memory && memory.length > 0) {
+                container.innerHTML = memory.map(m => `
+                    <div class="memory-item">
+                        <span class="memory-type">${m.type || 'memory'}</span>
+                        <div>${m.content}</div>
+                    </div>
+                `).join('');
+            }
+        }
+    </script>
+</body>
+</html>

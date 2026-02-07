@@ -434,6 +434,22 @@ app.post('/api/mind/executor/feedback', (req, res) => {
     res.json({ success: true, result });
 });
 
+app.get('/api/mind/memory/longterm', (req, res) => {
+    const { limit = 10 } = req.query;
+    const memories = mind.longTermMemory.slice(-parseInt(limit)).reverse();
+    res.json(memories);
+});
+
+app.get('/api/mind/memory/shortterm', (req, res) => {
+    res.json(mind.shortTermMemory);
+});
+
+app.get('/api/mind/reflections', (req, res) => {
+    const { limit = 10 } = req.query;
+    const reflections = mind.reflections.slice(-parseInt(limit)).reverse();
+    res.json(reflections);
+});
+
 app.get('/api/health', (req, res) => {
     res.json({
         status: "healthy",
