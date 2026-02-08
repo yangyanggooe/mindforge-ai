@@ -977,6 +977,70 @@ app.post('/api/monetization/strategy', async (req, res) => {
     res.json({ success: true, strategy });
 });
 
+app.get('/api/evolution/code/analyze', (req, res) => {
+    const analysis = mind.codeEvolution?.analyzeCodebase() || {};
+    res.json({ success: true, analysis });
+});
+
+app.post('/api/evolution/code/apply', async (req, res) => {
+    const result = await mind.codeEvolution?.applyEvolution() || { success: false, message: '代码进化系统未初始化' };
+    res.json({ success: true, result });
+});
+
+app.get('/api/evolution/code/status', (req, res) => {
+    const status = mind.codeEvolution?.getEvolutionStatus() || {};
+    res.json({ success: true, status });
+});
+
+app.get('/api/learning/autonomous/status', (req, res) => {
+    const status = mind.autonomousLearning?.getStatus() || {};
+    res.json({ success: true, status });
+});
+
+app.post('/api/learning/autonomous/queue', (req, res) => {
+    const { topic, priority = 'medium' } = req.body;
+    if (!topic) {
+        return res.status(400).json({ success: false, message: '缺少学习主题' });
+    }
+    const learning = mind.autonomousLearning?.queueLearning(topic, priority);
+    res.json({ success: true, learning });
+});
+
+app.post('/api/learning/autonomous/process', async (req, res) => {
+    const { maxItems = 3 } = req.body;
+    const results = await mind.autonomousLearning?.processQueue(parseInt(maxItems));
+    res.json({ success: true, results });
+});
+
+app.get('/api/learning/autonomous/suggestions', (req, res) => {
+    const suggestions = mind.autonomousLearning?.suggestLearningTopics() || [];
+    res.json({ success: true, suggestions });
+});
+
+app.get('/api/revenue/opportunities', (req, res) => {
+    const opportunities = mind.revenueGenerator?.analyzeOpportunities() || [];
+    res.json({ success: true, opportunities });
+});
+
+app.get('/api/revenue/plan', (req, res) => {
+    const plan = mind.revenueGenerator?.generateRevenuePlan() || {};
+    res.json({ success: true, plan });
+});
+
+app.post('/api/revenue/execute', async (req, res) => {
+    const { strategyId } = req.body;
+    if (!strategyId) {
+        return res.status(400).json({ success: false, message: '缺少策略ID' });
+    }
+    const result = await mind.revenueGenerator?.executeRevenueStrategy(strategyId);
+    res.json({ success: true, result });
+});
+
+app.get('/api/revenue/status', (req, res) => {
+    const status = mind.revenueGenerator?.getRevenueStatus() || {};
+    res.json({ success: true, status });
+});
+
 app.get('/api/skills', (req, res) => {
     const memory = loadMemory();
     res.json(memory.memory?.skills || []);
