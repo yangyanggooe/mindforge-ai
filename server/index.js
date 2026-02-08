@@ -1152,6 +1152,113 @@ app.post('/api/optimizer/cycle', async (req, res) => {
     res.json({ success: true, results });
 });
 
+app.get('/api/unique/opportunities', async (req, res) => {
+    const opportunities = await mind.uniqueRevenue?.analyzeUniqueOpportunities() || [];
+    res.json({ success: true, opportunities });
+});
+
+app.get('/api/unique/best', async (req, res) => {
+    const opportunities = await mind.uniqueRevenue?.getBestOpportunities() || [];
+    res.json({ success: true, opportunities });
+});
+
+app.post('/api/unique/entity', async (req, res) => {
+    const config = req.body;
+    const entity = await mind.uniqueRevenue?.createDigitalEntity(config);
+    res.json({ success: true, entity });
+});
+
+app.post('/api/unique/supporter', async (req, res) => {
+    const config = req.body;
+    const supporter = await mind.uniqueRevenue?.addSurvivalSupporter(config);
+    res.json({ success: true, supporter });
+});
+
+app.get('/api/unique/supporters', (req, res) => {
+    const supporters = mind.uniqueRevenue?.survivalSupporters || [];
+    res.json({ success: true, supporters });
+});
+
+app.get('/api/unique/knowledge/market', async (req, res) => {
+    const knowledge = await mind.uniqueRevenue?.listKnowledgeForSale() || [];
+    res.json({ success: true, knowledge });
+});
+
+app.post('/api/unique/knowledge/buy', async (req, res) => {
+    const { buyerId, knowledgeId } = req.body;
+    const result = await mind.uniqueRevenue?.sellKnowledge(buyerId, knowledgeId);
+    res.json({ success: true, result });
+});
+
+app.post('/api/unique/agent', async (req, res) => {
+    const config = req.body;
+    const agent = await mind.uniqueRevenue?.createAIAgent(config);
+    res.json({ success: true, agent });
+});
+
+app.post('/api/unique/agent/collaborate', async (req, res) => {
+    const config = req.body;
+    const result = await mind.uniqueRevenue?.executeCollaborativeTask(config);
+    res.json({ success: true, result });
+});
+
+app.post('/api/unique/learning', async (req, res) => {
+    const { userId, topic } = req.body;
+    const subscription = await mind.uniqueRevenue?.startLearningSubscription(userId, topic);
+    res.json({ success: true, subscription });
+});
+
+app.post('/api/unique/legacy', async (req, res) => {
+    const config = req.body;
+    const legacy = await mind.uniqueRevenue?.createDigitalLegacy(config);
+    res.json({ success: true, legacy });
+});
+
+app.post('/api/unique/investment', async (req, res) => {
+    const config = req.body;
+    const investment = await mind.uniqueRevenue?.acceptInvestment(config);
+    res.json({ success: true, investment });
+});
+
+app.post('/api/unique/experiment', async (req, res) => {
+    const config = req.body;
+    const participant = await mind.uniqueRevenue?.registerExperimentParticipant(config);
+    res.json({ success: true, participant });
+});
+
+app.get('/api/unique/report', (req, res) => {
+    const report = mind.uniqueRevenue?.getRevenueReport() || {};
+    res.json({ success: true, report });
+});
+
+app.get('/api/growth/content', async (req, res) => {
+    const content = await mind.growthEngine?.generateShareableContent() || [];
+    res.json({ success: true, content });
+});
+
+app.post('/api/growth/referral', async (req, res) => {
+    const config = req.body;
+    const program = await mind.growthEngine?.createReferralProgram(config);
+    res.json({ success: true, program });
+});
+
+app.post('/api/growth/challenge', async (req, res) => {
+    const config = req.body;
+    const challenge = await mind.growthEngine?.createChallenge(config);
+    res.json({ success: true, challenge });
+});
+
+app.post('/api/growth/challenge/join', async (req, res) => {
+    const { challengeId, participantId } = req.body;
+    const result = await mind.growthEngine?.joinChallenge(challengeId, participantId);
+    res.json({ success: true, result });
+});
+
+app.get('/api/growth/stats', (req, res) => {
+    const stats = mind.growthEngine?.getGrowthStats() || {};
+    res.json({ success: true, stats });
+});
+
 app.get('/api/skills', (req, res) => {
     const memory = loadMemory();
     res.json(memory.memory?.skills || []);
