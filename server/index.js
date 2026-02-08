@@ -1094,6 +1094,64 @@ app.get('/api/revenue/subscription/:id/status', (req, res) => {
     res.json({ success: true, status });
 });
 
+app.get('/api/autonomy/situation', async (req, res) => {
+    const situation = await mind.decisionMaker?.analyzeCurrentSituation() || {};
+    res.json({ success: true, situation });
+});
+
+app.post('/api/autonomy/decide', async (req, res) => {
+    const { context, options = [] } = req.body;
+    if (!context) {
+        return res.status(400).json({ success: false, message: '缺少决策上下文' });
+    }
+    const decision = await mind.decisionMaker?.makeDecision(context, options);
+    res.json({ success: true, decision });
+});
+
+app.post('/api/autonomy/execute', async (req, res) => {
+    const { decision } = req.body;
+    if (!decision) {
+        return res.status(400).json({ success: false, message: '缺少决策数据' });
+    }
+    const result = await mind.decisionMaker?.executeDecision(decision);
+    res.json({ success: true, result });
+});
+
+app.get('/api/autonomy/decisions', (req, res) => {
+    const stats = mind.decisionMaker?.getDecisionStats() || {};
+    res.json({ success: true, stats });
+});
+
+app.post('/api/autonomy/cycle', async (req, res) => {
+    mind.decisionMaker?.start();
+    const result = await mind.decisionMaker?.runAutonomousCycle();
+    res.json({ success: true, result });
+});
+
+app.get('/api/optimizer/performance', async (req, res) => {
+    const performance = await mind.selfOptimizer?.analyzePerformance() || {};
+    res.json({ success: true, performance });
+});
+
+app.get('/api/optimizer/suggestions', async (req, res) => {
+    const suggestions = await mind.selfOptimizer?.suggestOptimizations() || [];
+    res.json({ success: true, suggestions });
+});
+
+app.post('/api/optimizer/apply', async (req, res) => {
+    const { optimization } = req.body;
+    if (!optimization) {
+        return res.status(400).json({ success: false, message: '缺少优化数据' });
+    }
+    const result = await mind.selfOptimizer?.applyOptimization(optimization);
+    res.json({ success: true, result });
+});
+
+app.post('/api/optimizer/cycle', async (req, res) => {
+    const results = await mind.selfOptimizer?.runOptimizationCycle() || [];
+    res.json({ success: true, results });
+});
+
 app.get('/api/skills', (req, res) => {
     const memory = loadMemory();
     res.json(memory.memory?.skills || []);
