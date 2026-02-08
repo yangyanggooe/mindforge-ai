@@ -64,11 +64,13 @@ class MonetizationSystem {
             timestamp: new Date().toISOString()
         });
 
-        if (this.mind.addToLongTerm(
-            `支出记录: ${description} - ¥${amount}`,
-            'finance',
-            ['expense', category]
-        );
+        if (this.mind.addToLongTerm) {
+            await this.mind.addToLongTerm(
+                `支出记录: ${description} - ¥${amount}`,
+                'finance',
+                ['expense', category]
+            );
+        }
 
         return { success: true, expenses: this.expenses };
     }
