@@ -1041,6 +1041,59 @@ app.get('/api/revenue/status', (req, res) => {
     res.json({ success: true, status });
 });
 
+app.get('/api/revenue/strategy/analyze', async (req, res) => {
+    const analysis = await mind.revenueStrategy?.analyzeMarket() || {};
+    res.json({ success: true, analysis });
+});
+
+app.get('/api/revenue/strategy/best', async (req, res) => {
+    const strategies = await mind.revenueStrategy?.selectBestStrategy() || [];
+    res.json({ success: true, strategies });
+});
+
+app.post('/api/revenue/strategy/implement', async (req, res) => {
+    const { strategyId } = req.body;
+    if (!strategyId) {
+        return res.status(400).json({ success: false, message: '缺少策略ID' });
+    }
+    const implementation = await mind.revenueStrategy?.implementStrategy(strategyId);
+    res.json({ success: true, implementation });
+});
+
+app.post('/api/revenue/product', async (req, res) => {
+    const { strategyId, config } = req.body;
+    if (!strategyId) {
+        return res.status(400).json({ success: false, message: '缺少策略ID' });
+    }
+    const product = await mind.revenueStrategy?.createProduct(strategyId, config || {});
+    res.json({ success: true, product });
+});
+
+app.get('/api/revenue/report', (req, res) => {
+    const report = mind.revenueStrategy?.getRevenueReport() || {};
+    res.json({ success: true, report });
+});
+
+app.get('/api/revenue/plans', (req, res) => {
+    const plans = mind.freemium?.getPlans() || [];
+    res.json({ success: true, plans });
+});
+
+app.post('/api/revenue/subscription', async (req, res) => {
+    const { customerId, planId } = req.body;
+    if (!customerId || !planId) {
+        return res.status(400).json({ success: false, message: '缺少客户ID或计划ID' });
+    }
+    const subscription = await mind.freemium?.createSubscription(customerId, planId);
+    res.json({ success: true, subscription });
+});
+
+app.get('/api/revenue/subscription/:id/status', (req, res) => {
+    const { id } = req.params;
+    const status = mind.freemium?.getSubscriptionStatus(id);
+    res.json({ success: true, status });
+});
+
 app.get('/api/skills', (req, res) => {
     const memory = loadMemory();
     res.json(memory.memory?.skills || []);

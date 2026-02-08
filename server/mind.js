@@ -19,6 +19,7 @@ const { AutonomyManager } = require('./autonomy');
 const AutonomousSystem = require('./autonomous');
 const MonetizationSystem = require('./monetization');
 const { CodeEvolutionEngine, AutonomousLearningSystem, RevenueGenerator } = require('./selfEvolve');
+const { RevenueStrategy, AffiliateProgram, FreemiumModel } = require('./revenue');
 
 class Mind {
     constructor(dataDir) {
@@ -78,6 +79,9 @@ class Mind {
         this.codeEvolution = new CodeEvolutionEngine(this);
         this.autonomousLearning = new AutonomousLearningSystem(this);
         this.revenueGenerator = new RevenueGenerator(this);
+        this.revenueStrategy = new RevenueStrategy(this);
+        this.affiliate = new AffiliateProgram(this);
+        this.freemium = new FreemiumModel(this);
         this.automation.setupDefaultTasks();
         this.startAutonomousSystem();
     }
