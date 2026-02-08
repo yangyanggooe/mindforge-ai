@@ -894,6 +894,59 @@ app.post('/api/services/utility/explain', async (req, res) => {
     res.json(result);
 });
 
+app.get('/api/autonomy/status', (req, res) => {
+    const status = mind.autonomy?.getStatus() || { running: false };
+    res.json({ success: true, status });
+});
+
+app.post('/api/autonomy/start', (req, res) => {
+    const { interval = 60000 } = req.body;
+    mind.autonomy?.startAutonomousMode(parseInt(interval));
+    res.json({ success: true, message: '自主模式已启动' });
+});
+
+app.post('/api/autonomy/stop', (req, res) => {
+    mind.autonomy?.stopAutonomousMode();
+    res.json({ success: true, message: '自主模式已停止' });
+});
+
+app.post('/api/autonomy/level', (req, res) => {
+    const { level } = req.body;
+    if (!level || level < 1 || level > 5) {
+        return res.status(400).json({ success: false, message: '等级必须在1-5之间' });
+    }
+    mind.autonomy?.setAutonomyLevel(parseInt(level));
+    res.json({ success: true, level: parseInt(level) });
+});
+
+app.post('/api/autonomy/learn', async (req, res) => {
+    const { input, output, feedback } = req.body;
+    if (!input || !output) {
+        return res.status(400).json({ success: false, message: '缺少输入或输出' });
+    }
+    const result = await mind.autonomy?.learning.processInteraction(input, output, feedback);
+    res.json(result || { success: false, message: '自主学习系统未初始化' });
+});
+
+app.post('/api/autonomy/evolve', async (req, res) => {
+    const result = await mind.autonomy?.evolution.runEvolutionCycle();
+    res.json({ success: true, result });
+});
+
+app.post('/api/autonomy/decide', async (req, res) => {
+    const { context, options } = req.body;
+    if (!context) {
+        return res.status(400).json({ success: false, message: '缺少上下文' });
+    }
+    const decision = await mind.autonomy?.decision.makeDecision(context, options || []);
+    res.json({ success: true, decision });
+});
+
+app.get('/api/autonomy/report', (req, res) => {
+    const report = mind.autonomy?.evolution.getEvolutionReport() || {};
+    res.json({ success: true, report });
+});
+
 app.get('/api/skills', (req, res) => {
     const memory = loadMemory();
     res.json(memory.memory?.skills || []);
