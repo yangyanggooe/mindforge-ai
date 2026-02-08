@@ -947,6 +947,21 @@ app.get('/api/autonomy/report', (req, res) => {
     res.json({ success: true, report });
 });
 
+app.get('/api/autonomous/status', (req, res) => {
+    const status = mind.autonomousSystem?.getStatus() || { running: false };
+    res.json({ success: true, status });
+});
+
+app.post('/api/autonomous/start', (req, res) => {
+    mind.autonomousSystem?.start();
+    res.json({ success: true, message: '自主运行系统已启动' });
+});
+
+app.post('/api/autonomous/stop', (req, res) => {
+    mind.autonomousSystem?.stop();
+    res.json({ success: true, message: '自主运行系统已停止' });
+});
+
 app.get('/api/skills', (req, res) => {
     const memory = loadMemory();
     res.json(memory.memory?.skills || []);

@@ -16,6 +16,7 @@ const { SystemChecker, AutoFixer, RecoverySystem } = require('./health');
 const { PerformanceAnalyzer, KnowledgeIntegrator, GoalAdapter, SelfImprovementSystem } = require('./evolution');
 const { ServiceManager } = require('./services');
 const { AutonomyManager } = require('./autonomy');
+const AutonomousSystem = require('./autonomous');
 
 class Mind {
     constructor(dataDir) {
@@ -70,7 +71,18 @@ class Mind {
         this.improver = new SelfImprovementSystem(this);
         this.services = new ServiceManager(this);
         this.autonomy = new AutonomyManager(this);
+        this.autonomousSystem = new AutonomousSystem(this);
         this.automation.setupDefaultTasks();
+        this.startAutonomousSystem();
+    }
+
+    startAutonomousSystem() {
+        setTimeout(() => {
+            if (this.autonomousSystem) {
+                this.autonomousSystem.start();
+                console.log('🤖 自主运行系统已启动');
+            }
+        }, 5000);
     }
 
     _loadMemory(filename, defaultVal) {
