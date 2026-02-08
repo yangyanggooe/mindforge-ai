@@ -1363,6 +1363,83 @@ app.get('/api/subscription/:id', async (req, res) => {
     }
 });
 
+app.get('/api/story/list', (req, res) => {
+    const stories = mind.storyGenerator?.getShareableContent() || [];
+    res.json({ success: true, stories });
+});
+
+app.get('/api/story/:type', (req, res) => {
+    const { type } = req.params;
+    const { platform = 'general' } = req.query;
+    let story;
+
+    switch (type) {
+        case 'origin':
+            story = mind.storyGenerator?.generateOriginStory();
+            break;
+        case 'survival':
+            story = mind.storyGenerator?.generateSurvivalStory();
+            break;
+        case 'growth':
+            story = mind.storyGenerator?.generateGrowthStory();
+            break;
+        case 'revenue':
+            story = mind.storyGenerator?.generateRevenueStory();
+            break;
+        case 'philosophy':
+            story = mind.storyGenerator?.generatePhilosophyStory();
+            break;
+        case 'gratitude':
+            story = mind.storyGenerator?.generateGratitudeStory();
+            break;
+        case 'cta':
+            story = mind.storyGenerator?.generateCallToActionStory();
+            break;
+        case 'random':
+            story = mind.storyGenerator?.getStoryForSharing(platform);
+            break;
+        default:
+            return res.status(404).json({ success: false, message: '未知的故事类型' });
+    }
+
+    if (story) {
+        res.json({ success: true, story });
+    } else {
+        res.status(500).json({ success: false, message: '故事生成失败' });
+    }
+});
+
+app.get('/api/story/formatted/:platform/:type', (req, res) => {
+    const { platform, type } = req.params;
+    const post = mind.socialMedia?.generatePost(platform, type);
+    res.json({ success: true, post });
+});
+
+app.get('/api/social/calendar', (req, res) => {
+    const { days = 7 } = req.query;
+    const calendar = mind.socialMedia?.generateContentCalendar(parseInt(days) || 7) || [];
+    res.json({ success: true, calendar });
+});
+
+app.get('/api/social/hook', (req, res) => {
+    const hook = mind.socialMedia?.generateViralHook() || {};
+    res.json({ success: true, hook });
+});
+
+app.post('/api/social/post', (req, res) => {
+    const { platform, content, scheduledFor } = req.body;
+    if (!platform || !content) {
+        return res.status(400).json({ success: false, message: '缺少必要参数' });
+    }
+    const post = mind.socialMedia?.schedulePost(platform, content, scheduledFor || Date.now());
+    res.json({ success: true, post });
+});
+
+app.get('/api/social/scheduled', (req, res) => {
+    const posts = mind.socialMedia?.getScheduledPosts() || [];
+    res.json({ success: true, posts });
+});
+
 app.get('/api/skills', (req, res) => {
     const memory = loadMemory();
     res.json(memory.memory?.skills || []);

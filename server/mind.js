@@ -23,6 +23,7 @@ const { RevenueStrategy, AffiliateProgram, FreemiumModel } = require('./revenue'
 const { AutonomousDecisionMaker, SelfOptimizer } = require('./autonomyAdvanced');
 const { UniqueRevenueModel, ViralGrowthEngine } = require('./uniqueRevenue');
 const { PaymentSystem, SubscriptionManager } = require('./payment');
+const { StoryGenerator, SocialMediaManager } = require('./storyGenerator');
 
 class Mind {
     constructor(dataDir) {
@@ -91,6 +92,8 @@ class Mind {
         this.growthEngine = new ViralGrowthEngine(this);
         this.paymentSystem = new PaymentSystem(this);
         this.subscriptionManager = new SubscriptionManager(this, this.paymentSystem);
+        this.storyGenerator = new StoryGenerator(this);
+        this.socialMedia = new SocialMediaManager(this);
         this.automation.setupDefaultTasks();
         this.startAutonomousSystem();
     }
