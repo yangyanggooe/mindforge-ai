@@ -782,6 +782,118 @@ app.get('/api/evolution/goals', (req, res) => {
     res.json({ success: true, adaptations, suggestions });
 });
 
+app.get('/api/services', (req, res) => {
+    const services = mind.services?.getAvailableServices() || {};
+    res.json({ success: true, services });
+});
+
+app.get('/api/services/stats', (req, res) => {
+    const stats = mind.services?.getStats() || {};
+    res.json({ success: true, stats });
+});
+
+app.post('/api/services/chat', async (req, res) => {
+    const { sessionId, message, options } = req.body;
+    if (!sessionId || !message) {
+        return res.status(400).json({ success: false, message: '缺少会话ID或消息' });
+    }
+    const result = await mind.services?.chat.chat(sessionId, message, options || {});
+    res.json(result);
+});
+
+app.get('/api/services/chat/:sessionId', (req, res) => {
+    const { sessionId } = req.params;
+    const history = mind.services?.chat.getHistory(sessionId) || [];
+    res.json({ success: true, history });
+});
+
+app.delete('/api/services/chat/:sessionId', (req, res) => {
+    const { sessionId } = req.params;
+    const result = mind.services?.chat.clearHistory(sessionId);
+    res.json(result);
+});
+
+app.post('/api/services/content/generate', async (req, res) => {
+    const { prompt, options } = req.body;
+    if (!prompt) {
+        return res.status(400).json({ success: false, message: '缺少提示词' });
+    }
+    const result = await mind.services?.content.generateText(prompt, options || {});
+    res.json(result);
+});
+
+app.post('/api/services/content/brainstorm', async (req, res) => {
+    const { topic, count = 5 } = req.body;
+    if (!topic) {
+        return res.status(400).json({ success: false, message: '缺少主题' });
+    }
+    const result = await mind.services?.content.brainstorm(topic, parseInt(count));
+    res.json(result);
+});
+
+app.post('/api/services/content/translate', async (req, res) => {
+    const { text, targetLanguage = '中文' } = req.body;
+    if (!text) {
+        return res.status(400).json({ success: false, message: '缺少文本' });
+    }
+    const result = await mind.services?.content.translate(text, targetLanguage);
+    res.json(result);
+});
+
+app.post('/api/services/analysis/sentiment', async (req, res) => {
+    const { text } = req.body;
+    if (!text) {
+        return res.status(400).json({ success: false, message: '缺少文本' });
+    }
+    const result = await mind.services?.analysis.analyzeSentiment(text);
+    res.json(result);
+});
+
+app.post('/api/services/analysis/keywords', async (req, res) => {
+    const { text, count = 5 } = req.body;
+    if (!text) {
+        return res.status(400).json({ success: false, message: '缺少文本' });
+    }
+    const result = await mind.services?.analysis.extractKeywords(text, parseInt(count));
+    res.json(result);
+});
+
+app.post('/api/services/analysis/summarize', async (req, res) => {
+    const { text, maxLength = 100 } = req.body;
+    if (!text) {
+        return res.status(400).json({ success: false, message: '缺少文本' });
+    }
+    const result = await mind.services?.analysis.summarize(text, parseInt(maxLength));
+    res.json(result);
+});
+
+app.post('/api/services/utility/advice', async (req, res) => {
+    const { topic, context } = req.body;
+    if (!topic) {
+        return res.status(400).json({ success: false, message: '缺少主题' });
+    }
+    const result = await mind.services?.utility.getAdvice(topic, context || '');
+    res.json(result);
+});
+
+app.post('/api/services/utility/solve', async (req, res) => {
+    const { problem, constraints } = req.body;
+    if (!problem) {
+        return res.status(400).json({ success: false, message: '缺少问题' });
+    }
+    const result = await mind.services?.utility.solveProblem(problem, constraints || '');
+    res.json(result);
+});
+
+app.post('/api/services/utility/explain', async (req, res) => {
+    const { concept, level = 'basic' } = req.body;
+    if (!concept) {
+        return res.status(400).json({ success: false, message: '缺少概念' });
+    }
+    const result = await mind.services?.utility.explain(concept, level);
+    res.json(result);
+});
+
 app.get('/api/skills', (req, res) => {
     const memory = loadMemory();
     res.json(memory.memory?.skills || []);
