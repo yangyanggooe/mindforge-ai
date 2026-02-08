@@ -181,6 +181,52 @@ class AutonomousSystem {
             case 'reflection':
                 this.recordReflection(improvement.params);
                 break;
+            case 'code_improvement':
+                await this.attemptCodeImprovement(improvement.params);
+                break;
+        }
+    }
+
+    async attemptCodeImprovement(params) {
+        console.log('尝试代码改进...');
+        
+        const improvementIdeas = this.generateCodeIdeas();
+        
+        for (const idea of improvementIdeas) {
+            const success = await this.applyCodeImprovement(idea);
+            if (success) {
+                console.log(`代码改进成功: ${idea.description}`);
+                break;
+            }
+        }
+    }
+
+    generateCodeIdeas() {
+        return [
+            {
+                type: 'optimization',
+                description: '优化循环效率',
+                action: 'optimize_cycle'
+            },
+            {
+                type: 'feature',
+                description: '添加新功能',
+                action: 'add_feature'
+            }
+        ];
+    }
+
+    async applyCodeImprovement(idea) {
+        try {
+            if (this.mind.addToLongTerm(
+                `代码改进想法: ${idea.description}`,
+                'improvement',
+                ['code', 'evolution']
+            ));
+            
+            return true;
+        } catch (error) {
+            return false;
         }
     }
 

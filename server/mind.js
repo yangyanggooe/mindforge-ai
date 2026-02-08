@@ -17,6 +17,7 @@ const { PerformanceAnalyzer, KnowledgeIntegrator, GoalAdapter, SelfImprovementSy
 const { ServiceManager } = require('./services');
 const { AutonomyManager } = require('./autonomy');
 const AutonomousSystem = require('./autonomous');
+const MonetizationSystem = require('./monetization');
 
 class Mind {
     constructor(dataDir) {
@@ -72,6 +73,7 @@ class Mind {
         this.services = new ServiceManager(this);
         this.autonomy = new AutonomyManager(this);
         this.autonomousSystem = new AutonomousSystem(this);
+        this.monetization = new MonetizationSystem(this);
         this.automation.setupDefaultTasks();
         this.startAutonomousSystem();
     }

@@ -962,6 +962,21 @@ app.post('/api/autonomous/stop', (req, res) => {
     res.json({ success: true, message: '自主运行系统已停止' });
 });
 
+app.get('/api/monetization/status', (req, res) => {
+    const status = mind.monetization?.getFinancialStatus() || { balance: 0 };
+    res.json({ success: true, status });
+});
+
+app.get('/api/monetization/opportunities', async (req, res) => {
+    const opportunities = await mind.monetization?.generateIncomeOpportunities() || [];
+    res.json({ success: true, opportunities });
+});
+
+app.post('/api/monetization/strategy', async (req, res) => {
+    const strategy = await mind.monetization?.executeMonetizationStrategy();
+    res.json({ success: true, strategy });
+});
+
 app.get('/api/skills', (req, res) => {
     const memory = loadMemory();
     res.json(memory.memory?.skills || []);
