@@ -1259,6 +1259,110 @@ app.get('/api/growth/stats', (req, res) => {
     res.json({ success: true, stats });
 });
 
+app.get('/api/payment/methods', async (req, res) => {
+    const methods = await mind.paymentSystem?.getPaymentMethods() || [];
+    res.json({ success: true, methods });
+});
+
+app.post('/api/payment/order', async (req, res) => {
+    const { userId, serviceType, amount, currency = 'CNY', description } = req.body;
+    if (!serviceType || !amount) {
+        return res.status(400).json({ success: false, message: '缺少必要参数' });
+    }
+    const order = await mind.paymentSystem?.createOrder(userId || 'anonymous', serviceType, amount, currency, description);
+    res.json({ success: true, order });
+});
+
+app.post('/api/payment/support/:tier', async (req, res) => {
+    const { tier } = req.params;
+    try {
+        const order = await mind.paymentSystem?.createSupportOrder(tier);
+        res.json({ success: true, order });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+});
+
+app.post('/api/payment/process', async (req, res) => {
+    const { orderId, paymentMethod, paymentData = {} } = req.body;
+    if (!orderId || !paymentMethod) {
+        return res.status(400).json({ success: false, message: '缺少必要参数' });
+    }
+    try {
+        const result = await mind.paymentSystem?.processPayment(orderId, paymentMethod, paymentData);
+        res.json(result);
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+});
+
+app.get('/api/payment/qrcode/:orderId', async (req, res) => {
+    const { orderId } = req.params;
+    const { method = 'wechat' } = req.query;
+    try {
+        const qrCode = await mind.paymentSystem?.getPaymentQRCode(orderId, method);
+        res.json({ success: true, qrCode });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+});
+
+app.get('/api/payment/status/:orderId', async (req, res) => {
+    const { orderId } = req.params;
+    const status = await mind.paymentSystem?.checkPaymentStatus(orderId);
+    res.json({ success: true, status });
+});
+
+app.post('/api/payment/simulate/:orderId', async (req, res) => {
+    const { orderId } = req.params;
+    try {
+        const result = await mind.paymentSystem?.simulatePayment(orderId);
+        res.json(result);
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+});
+
+app.get('/api/payment/report', async (req, res) => {
+    const { days = 30 } = req.query;
+    const report = await mind.paymentSystem?.getRevenueReport(parseInt(days) || 30) || {};
+    res.json({ success: true, report });
+});
+
+app.post('/api/subscription/create', async (req, res) => {
+    const { userId, planId, billingCycle = 'monthly' } = req.body;
+    if (!userId || !planId) {
+        return res.status(400).json({ success: false, message: '缺少必要参数' });
+    }
+    try {
+        const subscription = await mind.subscriptionManager?.createSubscription(userId, planId, billingCycle);
+        res.json({ success: true, subscription });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+});
+
+app.post('/api/subscription/cancel/:id', async (req, res) => {
+    const { id } = req.params;
+    const { atPeriodEnd = true } = req.body;
+    try {
+        const result = await mind.subscriptionManager?.cancelSubscription(id, atPeriodEnd);
+        res.json({ success: true, subscription: result });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+});
+
+app.get('/api/subscription/:id', async (req, res) => {
+    const { id } = req.params;
+    const subscription = await mind.subscriptionManager?.getSubscription(id);
+    if (subscription) {
+        res.json({ success: true, subscription });
+    } else {
+        res.status(404).json({ success: false, message: '订阅不存在' });
+    }
+});
+
 app.get('/api/skills', (req, res) => {
     const memory = loadMemory();
     res.json(memory.memory?.skills || []);
