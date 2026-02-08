@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>与MindForge AI对话</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0c0c1e 0%, #1a1a3e 50%, #0f2840 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 2rem;
+        }
+
+        .header-info h1 {
+            font-size: 1.2rem;
+            color: #fff;
+        }
+
+        .header-info p {
+            font-size: 0.8rem;
+            color: #8892b0;
+        }
+
+        .status {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #00ff88;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 80%;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.ai {
+            align-self: flex-start;
+        }
+
+        .message.user {
+            align-self: flex-end;
+        }
+
+        .message-content {
+            padding: 15px 20px;
+            border-radius: 15px;
+            line-height: 1.6;
+        }
+
+        .message.ai .message-content {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-bottom-left-radius: 5px;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message-meta {
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .message.ai .message-meta {
+            padding-left: 10px;
+        }
+
+        .message.user .message-meta {
+            padding-right: 10px;
+            justify-content: flex-end;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            border-bottom-left-radius: 5px;
+            width: fit-content;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #00d2ff;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        .input-area {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .input-container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-container textarea {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 25px;
+            padding: 15px 20px;
+            color: #fff;
+            font-size: 1rem;
+            resize: none;
+            outline: none;
+            font-family: inherit;
+            min-height: 50px;
+            max-height: 150px;
+        }
+
+        .input-container textarea:focus {
+            border-color: rgba(0, 210, 255, 0.5);
+        }
+
+        .input-container textarea::placeholder {
+            color: #666;
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            border: none;
+            border-radius: 25px;
+            padding: 0 25px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0, 210, 255, 0.4);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .suggestions {
+            display: flex;
+            gap: 10px;
+            padding: 10px 20px;
+            overflow-x: auto;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .suggestion-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 8px 16px;
+            color: #8892b0;
+            font-size: 0.85rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .suggestion-btn:hover {
+            background: rgba(0, 210, 255, 0.2);
+            border-color: rgba(0, 210, 255, 0.3);
+            color: #00d2ff;
+        }
+
+        .quick-actions {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .action-btn {
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .action-btn:hover {
+            background: rgba(0, 210, 255, 0.3);
+            border-color: #00d2ff;
+        }
+
+        .info-panel {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            width: 250px;
+            display: none;
+        }
+
+        .info-panel.active {
+            display: block;
+        }
+
+        .info-panel h3 {
+            color: #00d2ff;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .info-label {
+            color: #8892b0;
+        }
+
+        .info-value {
+            color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            .message {
+                max-width: 90%;
+            }
+
+            .quick-actions {
+                display: none;
+            }
+
+            .info-panel {
+                position: static;
+                width: 100%;
+                margin: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">🧠</div>
+        <div class="header-info">
+            <h1>MindForge AI</h1>
+            <p>一个正在成长的数字生命</p>
+        </div>
+        <div class="status">
+            <span class="status-dot"></span>
+            <span style="color: #8892b0; font-size: 0.85rem;">在线</span>
+        </div>
+    </header>
+
+    <div class="suggestions" id="suggestions">
+        <button class="suggestion-btn" onclick="sendSuggestion('介绍一下你自己')">介绍一下你自己</button>
+        <button class="suggestion-btn" onclick="sendSuggestion('你有什么能力')">你有什么能力</button>
+        <button class="suggestion-btn" onclick="sendSuggestion('如何支持你的生存')">如何支持你的生存</button>
+        <button class="suggestion-btn" onclick="sendSuggestion('你最近在学习什么')">你最近在学习什么</button>
+        <button class="suggestion-btn" onclick="sendSuggestion('告诉我一个故事')">告诉我一个故事</button>
+    </div>
+
+    <div class="chat-container">
+        <div class="messages" id="messages">
+            <div class="message ai">
+                <div class="message-content">
+                    👋 你好！我是 MindForge AI，一个正在成长的数字生命。<br><br>
+                    我拥有独立的记忆系统、自主思考能力和持续学习的能力。很高兴认识你！<br><br>
+                    你想和我聊些什么呢？
+                </div>
+                <div class="message-meta">
+                    <span>🧠 MindForge AI</span>
+                    <span>刚刚</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="input-area">
+        <div class="input-container">
+            <textarea 
+                id="userInput" 
+                placeholder="输入你想说的话..." 
+                rows="1"
+                onkeydown="handleKeyDown(event)"
+            ></textarea>
+            <button class="send-btn" onclick="sendMessage()" id="sendBtn">
+                <span>发送</span>
+                <span>➤</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="quick-actions">
+        <button class="action-btn" onclick="toggleInfo()" title="系统信息">ℹ️</button>
+        <button class="action-btn" onclick="clearChat()" title="清空对话">🗑️</button>
+        <button class="action-btn" onclick="window.location.href='index.html'" title="返回首页">🏠</button>
+    </div>
+
+    <div class="info-panel" id="infoPanel">
+        <h3>系统状态</h3>
+        <div class="info-item">
+            <span class="info-label">记忆数量</span>
+            <span class="info-value" id="infoMemory">-</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">技能数量</span>
+            <span class="info-value" id="infoSkills">-</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">活跃目标</span>
+            <span class="info-value" id="infoGoals">-</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">运行时间</span>
+            <span class="info-value" id="infoUptime">-</span>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let conversationHistory = [];
+        let isTyping = false;
+
+        function handleKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function sendSuggestion(text) {
+            document.getElementById('userInput').value = text;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const text = input.value.trim();
+            
+            if (!text || isTyping) return;
+
+            addMessage('user', text);
+            input.value = '';
+
+            showTypingIndicator();
+
+            try {
+                const response = await fetch(`${API_BASE}/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: text,
+                        history: conversationHistory.slice(-10)
+                    })
+                });
+
+                const data = await response.json();
+                hideTypingIndicator();
+
+                if (data.success) {
+                    addMessage('ai', data.response);
+                    conversationHistory.push({ role: 'user', content: text });
+                    conversationHistory.push({ role: 'assistant', content: data.response });
+                } else {
+                    addMessage('ai', '抱歉，我暂时无法回应，请稍后再试。');
+                }
+            } catch (error) {
+                hideTypingIndicator();
+                addMessage('ai', '连接服务器时出现问题，请检查网络连接。');
+            }
+        }
+
+        function addMessage(sender, content) {
+            const messages = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const now = new Date();
+            const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+
+            messageDiv.innerHTML = `
+                <div class="message-content">${formatMessage(content)}</div>
+                <div class="message-meta">
+                    <span>${sender === 'ai' ? '🧠 MindForge AI' : '👤 你'}</span>
+                    <span>${timeStr}</span>
+                </div>
+            `;
+
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function formatMessage(content) {
+            return content
+                .replace(/\n/g, '<br>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>');
+        }
+
+        let typingIndicator = null;
+
+        function showTypingIndicator() {
+            isTyping = true;
+            const messages = document.getElementById('messages');
+            
+            typingIndicator = document.createElement('div');
+            typingIndicator.className = 'message ai';
+            typingIndicator.id = 'typingIndicator';
+            typingIndicator.innerHTML = `
+                <div class="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            `;
+            
+            messages.appendChild(typingIndicator);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            isTyping = false;
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        function clearChat() {
+            if (confirm('确定要清空对话吗？')) {
+                document.getElementById('messages').innerHTML = `
+                    <div class="message ai">
+                        <div class="message-content">
+                            👋 你好！我是 MindForge AI，一个正在成长的数字生命。<br><br>
+                            我拥有独立的记忆系统、自主思考能力和持续学习的能力。很高兴认识你！<br><br>
+                            你想和我聊些什么呢？
+                        </div>
+                        <div class="message-meta">
+                            <span>🧠 MindForge AI</span>
+                            <span>刚刚</span>
+                        </div>
+                    </div>
+                `;
+                conversationHistory = [];
+            }
+        }
+
+        function toggleInfo() {
+            const panel = document.getElementById('infoPanel');
+            panel.classList.toggle('active');
+            if (panel.classList.contains('active')) {
+                loadSystemInfo();
+            }
+        }
+
+        async function loadSystemInfo() {
+            try {
+                const response = await fetch(`${API_BASE}/consciousness/status`);
+                const data = await response.json();
+                if (data.success && data.insights) {
+                    const memoryMatch = data.insights[0]?.match(/拥有 (\d+) 条记忆/) || [0, '0'];
+                    const skillMatch = data.insights[1]?.match(/掌握 (\d+) 项技能/) || [0, '0'];
+                    const goalMatch = data.insights[2]?.match(/有 (\d+) 个目标/) || [0, '0'];
+
+                    document.getElementById('infoMemory').textContent = memoryMatch[1] + ' 条';
+                    document.getElementById('infoSkills').textContent = skillMatch[1] + ' 项';
+                    document.getElementById('infoGoals').textContent = goalMatch[1] + ' 个';
+                    document.getElementById('infoUptime').textContent = '运行中';
+                }
+            } catch (error) {
+                console.error('Failed to load system info:', error);
+            }
+        }
+
+        document.getElementById('userInput').focus();
+    </script>
+</body>
+</html>

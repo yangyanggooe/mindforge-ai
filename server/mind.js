@@ -24,6 +24,7 @@ const { AutonomousDecisionMaker, SelfOptimizer } = require('./autonomyAdvanced')
 const { UniqueRevenueModel, ViralGrowthEngine } = require('./uniqueRevenue');
 const { PaymentSystem, SubscriptionManager } = require('./payment');
 const { StoryGenerator, SocialMediaManager } = require('./storyGenerator');
+const { FeedbackSystem, TaskRequestSystem, ContactMessageSystem } = require('./feedback');
 
 class Mind {
     constructor(dataDir) {
@@ -94,6 +95,9 @@ class Mind {
         this.subscriptionManager = new SubscriptionManager(this, this.paymentSystem);
         this.storyGenerator = new StoryGenerator(this);
         this.socialMedia = new SocialMediaManager(this);
+        this.feedbackSystem = new FeedbackSystem(this);
+        this.taskRequestSystem = new TaskRequestSystem(this);
+        this.contactSystem = new ContactMessageSystem(this);
         this.automation.setupDefaultTasks();
         this.startAutonomousSystem();
     }
