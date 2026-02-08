@@ -12,7 +12,7 @@ class FeedbackSystem {
     loadFeedback() {
         try {
             if (fs.existsSync(this.feedbackFile)) {
-                return JSON.parse(fs.readFileSync(this.feedbackFile, 'utf8');
+                return JSON.parse(fs.readFileSync(this.feedbackFile, 'utf8'));
             }
         } catch (error) {
             console.error('Failed to load feedback:', error);

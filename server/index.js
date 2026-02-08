@@ -1353,6 +1353,11 @@ app.post('/api/subscription/cancel/:id', async (req, res) => {
     }
 });
 
+app.get('/api/subscription/plans', async (req, res) => {
+    const plans = await mind.entitySubscriptionManager?.getPlans() || [];
+    res.json({ success: true, plans });
+});
+
 app.get('/api/subscription/:id', async (req, res) => {
     const { id } = req.params;
     const subscription = await mind.subscriptionManager?.getSubscription(id);
@@ -1726,6 +1731,170 @@ app.get('/api/contact', async (req, res) => {
 app.get('/api/contact/unread-count', async (req, res) => {
     const count = await mind.contactSystem?.getUnreadCount() || 0;
     res.json({ success: true, count });
+});
+
+app.get('/api/digital-entity/templates', async (req, res) => {
+    const templates = await mind.digitalEntityService?.getEntityTemplates() || [];
+    res.json({ success: true, templates });
+});
+
+app.post('/api/digital-entity/create', async (req, res) => {
+    const { name, personality, ownerId, templateId } = req.body;
+    if (!name) {
+        return res.status(400).json({ success: false, message: '缺少实体名称' });
+    }
+    try {
+        const entity = await mind.digitalEntityService?.createEntity({ name, personality, ownerId, templateId });
+        res.json({ success: true, entity });
+    } catch (error) {
+        res.status(500).json({ success: false, message: '创建实体失败' });
+    }
+});
+
+app.get('/api/digital-entity/:id', async (req, res) => {
+    const entity = await mind.digitalEntityService?.getEntity(req.params.id);
+    if (entity) {
+        res.json({ success: true, entity: entity.toJSON() });
+    } else {
+        res.status(404).json({ success: false, message: '实体不存在' });
+    }
+});
+
+app.post('/api/digital-entity/:id/interact', async (req, res) => {
+    const { input, context } = req.body;
+    if (!input) {
+        return res.status(400).json({ success: false, message: '缺少输入内容' });
+    }
+    try {
+        const result = await mind.digitalEntityService?.interactWithEntity(req.params.id, input, context);
+        res.json({ success: true, result });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+app.get('/api/digital-entity/stats', async (req, res) => {
+    const stats = await mind.digitalEntityService?.getHostingStats() || {};
+    res.json({ success: true, stats });
+});
+
+app.post('/api/subscription/create', async (req, res) => {
+    const { userId, planId, entityConfig } = req.body;
+    if (!userId || !planId) {
+        return res.status(400).json({ success: false, message: '缺少必要参数' });
+    }
+    try {
+        const subscription = await mind.entitySubscriptionManager?.createSubscription(userId, planId, entityConfig);
+        res.json({ success: true, subscription });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+app.get('/api/sponsor/tiers', async (req, res) => {
+    const tiers = mind.survivalSponsor?.getSponsorTiers() || [];
+    res.json({ success: true, tiers });
+});
+
+app.post('/api/sponsor', async (req, res) => {
+    const { name, email, amount, message, tier, public: isPublic } = req.body;
+    if (!amount || amount <= 0) {
+        return res.status(400).json({ success: false, message: '请输入有效金额' });
+    }
+    try {
+        const sponsor = await mind.survivalSponsor?.addSponsor({ name, email, amount, message, tier, public: isPublic });
+        res.json({ success: true, sponsor });
+    } catch (error) {
+        res.status(500).json({ success: false, message: '添加赞助失败' });
+    }
+});
+
+app.get('/api/sponsor/list', async (req, res) => {
+    const { limit = 20 } = req.query;
+    const sponsors = await mind.survivalSponsor?.getPublicSponsors(parseInt(limit)) || [];
+    res.json({ success: true, sponsors });
+});
+
+app.get('/api/sponsor/stats', async (req, res) => {
+    const stats = await mind.survivalSponsor?.getSponsorStats() || {};
+    res.json({ success: true, stats });
+});
+
+app.get('/api/knowledge/categories', async (req, res) => {
+    const categories = mind.knowledgeMarket?.getKnowledgeCategories() || [];
+    res.json({ success: true, categories });
+});
+
+app.get('/api/knowledge/listings', async (req, res) => {
+    const { category, limit = 50 } = req.query;
+    const listings = await mind.knowledgeMarket?.getListings(category, parseInt(limit)) || [];
+    res.json({ success: true, listings });
+});
+
+app.get('/api/knowledge/:id', async (req, res) => {
+    const listing = await mind.knowledgeMarket?.getListing(req.params.id);
+    if (listing) {
+        res.json({ success: true, listing });
+    } else {
+        res.status(404).json({ success: false, message: '知识不存在' });
+    }
+});
+
+app.post('/api/knowledge/create', async (req, res) => {
+    const { title, description, category, content, preview, price, sellerId, sellerName } = req.body;
+    if (!title || !content) {
+        return res.status(400).json({ success: false, message: '缺少必要信息' });
+    }
+    try {
+        const listing = await mind.knowledgeMarket?.createKnowledgeListing({ title, description, category, content, preview, price, sellerId, sellerName });
+        res.json({ success: true, listing });
+    } catch (error) {
+        res.status(500).json({ success: false, message: '创建知识失败' });
+    }
+});
+
+app.post('/api/knowledge/:id/purchase', async (req, res) => {
+    const { buyerId, buyerName } = req.body;
+    try {
+        const result = await mind.knowledgeMarket?.purchaseKnowledge(req.params.id, buyerId, buyerName);
+        res.json({ success: true, result });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+app.get('/api/knowledge/stats', async (req, res) => {
+    const stats = await mind.knowledgeMarket?.getMarketStats() || {};
+    res.json({ success: true, stats });
+});
+
+app.get('/api/marketplace/services', async (req, res) => {
+    const { category } = req.query;
+    const services = await mind.aiMarketplace?.getServices(category) || [];
+    res.json({ success: true, services });
+});
+
+app.get('/api/marketplace/categories', async (req, res) => {
+    const categories = await mind.aiMarketplace?.getServiceCategories() || [];
+    res.json({ success: true, categories });
+});
+
+app.post('/api/marketplace/order', async (req, res) => {
+    const { serviceId, buyerId, buyerName, requirements } = req.body;
+    if (!serviceId) {
+        return res.status(400).json({ success: false, message: '缺少服务ID' });
+    }
+    try {
+        const order = await mind.aiMarketplace?.createOrder(serviceId, buyerId, buyerName, requirements);
+        res.json({ success: true, order });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+app.get('/api/marketplace/stats', async (req, res) => {
+    const stats = await mind.aiMarketplace?.getMarketplaceStats() || {};
+    res.json({ success: true, stats });
 });
 
 app.get('/api/skills', (req, res) => {

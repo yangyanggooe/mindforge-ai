@@ -25,6 +25,8 @@ const { UniqueRevenueModel, ViralGrowthEngine } = require('./uniqueRevenue');
 const { PaymentSystem, SubscriptionManager } = require('./payment');
 const { StoryGenerator, SocialMediaManager } = require('./storyGenerator');
 const { FeedbackSystem, TaskRequestSystem, ContactMessageSystem } = require('./feedback');
+const { DigitalEntityHostingService, EntitySubscriptionManager } = require('./digitalEntity');
+const { SurvivalSponsor, KnowledgeMarket, AIServiceMarketplace } = require('./survivalMarket');
 
 class Mind {
     constructor(dataDir) {
@@ -98,6 +100,11 @@ class Mind {
         this.feedbackSystem = new FeedbackSystem(this);
         this.taskRequestSystem = new TaskRequestSystem(this);
         this.contactSystem = new ContactMessageSystem(this);
+        this.digitalEntityService = new DigitalEntityHostingService(this);
+        this.entitySubscriptionManager = new EntitySubscriptionManager(this, this.digitalEntityService);
+        this.survivalSponsor = new SurvivalSponsor(this);
+        this.knowledgeMarket = new KnowledgeMarket(this);
+        this.aiMarketplace = new AIServiceMarketplace(this);
         this.automation.setupDefaultTasks();
         this.startAutonomousSystem();
     }

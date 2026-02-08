@@ -63,7 +63,7 @@ class RevenueStrategy {
             recommendations: []
         };
 
-        const skills = this.mind.skillManager?.getSkills() || [];
+        const skills = this.mind.skillManager?.listSkills() || [];
         analysis.marketConditions.skillsAvailable = skills.length;
 
         const memories = this.mind.longTermMemory || [];

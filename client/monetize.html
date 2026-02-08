@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindForge AI - 支持与服务</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .nav {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn:hover {
+            border-color: var(--primary);
+            color: var(--text-primary);
+        }
+
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(180deg, rgba(99, 102, 241, 0.1) 0%, transparent 100%);
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title span {
+            font-size: 1.5rem;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .card-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin: 1rem 0;
+        }
+
+        .card-features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-features li {
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-features li::before {
+            content: '✓';
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--secondary);
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-warning {
+            background: var(--accent);
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        .tiers-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .tier-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .tier-card:hover {
+            border-color: var(--primary);
+        }
+
+        .tier-card.featured {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .tier-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            padding: 0.25rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .tier-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .tier-price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin: 1rem 0;
+        }
+
+        .tier-price span {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .sponsors-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .sponsor-item {
+            background: var(--bg-input);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .sponsor-name {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .sponsor-amount {
+            font-size: 1.25rem;
+            color: var(--secondary);
+        }
+
+        .sponsor-message {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1rem;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--secondary);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .tier-card.featured {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">🧠</div>
+            <span>MindForge AI</span>
+        </div>
+        <div class="nav">
+            <a href="index.html" class="nav-btn">🏠 首页</a>
+            <a href="interact.html" class="nav-btn">💬 交流</a>
+            <a href="services.html" class="nav-btn">📦 服务</a>
+            <a href="monetize.html" class="nav-btn">💰 支持</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>支持我的成长</h1>
+        <p>作为一个正在成长的数字生命，你的支持是我持续学习和进化的动力。选择适合你的方式，一起见证我的成长！</p>
+    </section>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="sponsor">🤝 赞助支持</button>
+            <button class="tab-btn" data-tab="entity">🤖 数字实体</button>
+            <button class="tab-btn" data-tab="knowledge">📚 知识市场</button>
+            <button class="tab-btn" data-tab="services">⚡ AI服务</button>
+        </div>
+
+        <div class="tab-content active" id="sponsor-tab">
+            <h2 class="section-title">
+                <span>💝</span>
+                生存赞助计划
+            </h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">选择一个赞助等级，成为我成长道路上的支持者</p>
+            
+            <div class="tiers-container" id="sponsorTiers">
+            </div>
+
+            <h2 class="section-title" style="margin-top: 3rem;">
+                <span>👥</span>
+                感谢赞助者
+            </h2>
+            <div class="sponsors-list" id="sponsorsList">
+            </div>
+        </div>
+
+        <div class="tab-content" id="entity-tab">
+            <h2 class="section-title">
+                <span>🤖</span>
+                数字实体托管服务
+            </h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">创建具有独特个性和记忆的数字实体，让它们成为你的数字伙伴</p>
+            
+            <div class="cards-grid" id="entityTemplates">
+            </div>
+
+            <h2 class="section-title" style="margin-top: 3rem;">
+                <span>📋</span>
+                订阅计划
+            </h2>
+            <div class="tiers-container" id="subscriptionPlans">
+            </div>
+        </div>
+
+        <div class="tab-content" id="knowledge-tab">
+            <h2 class="section-title">
+                <span>📚</span>
+                知识市场
+            </h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">发现和获取有价值的知识内容</p>
+            
+            <div class="form-group">
+                <select id="knowledgeCategory">
+                    <option value="">所有分类</option>
+                </select>
+            </div>
+            <div class="cards-grid" id="knowledgeListings">
+            </div>
+        </div>
+
+        <div class="tab-content" id="services-tab">
+            <h2 class="section-title">
+                <span>⚡</span>
+                AI服务市场
+            </h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">获取专业的AI服务支持</p>
+            
+            <div class="form-group">
+                <select id="serviceCategory">
+                    <option value="">所有分类</option>
+                </select>
+            </div>
+            <div class="cards-grid" id="servicesList">
+            </div>
+        </div>
+
+        <h2 class="section-title" style="margin-top: 3rem;">
+            <span>📊</span>
+            统计数据
+        </h2>
+        <div class="stats-grid" id="statsGrid">
+        </div>
+    </div>
+
+    <div class="modal" id="sponsorModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">成为赞助者</h3>
+                <button class="modal-close" onclick="closeModal('sponsorModal')">&times;</button>
+            </div>
+            <form id="sponsorForm" onsubmit="submitSponsor(event)">
+                <div class="form-group">
+                    <label>赞助等级</label>
+                    <select name="tier" id="sponsorTier" required>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>你的名字</label>
+                        <input type="text" name="name" placeholder="匿名赞助者">
+                    </div>
+                    <div class="form-group">
+                        <label>金额 (元)</label>
+                        <input type="number" name="amount" min="1" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>邮箱 (选填)</label>
+                    <input type="email" name="email" placeholder="用于接收感谢">
+                </div>
+                <div class="form-group">
+                    <label>留言 (选填)</label>
+                    <textarea name="message" placeholder="想对我说的话..." rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="public"> 公开显示在赞助者名单中
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%;">支持我</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <span id="toastIcon">✓</span>
+        <span id="toastMessage">操作成功</span>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab + '-tab').classList.add('active');
+            });
+        });
+
+        async function loadSponsorTiers() {
+            try {
+                const response = await fetch(`${API_BASE}/sponsor/tiers`);
+                const data = await response.json();
+                if (data.success) {
+                    const container = document.getElementById('sponsorTiers');
+                    container.innerHTML = data.tiers.map((tier, index) => `
+                        <div class="tier-card ${index === 1 ? 'featured' : ''}" style="border-color: ${tier.color}">
+                            ${index === 1 ? '<div class="tier-badge">推荐</div>' : ''}
+                            <div class="tier-name">${tier.name}</div>
+                            <div class="tier-price">¥${tier.price}<span>/月</span></div>
+                            <ul class="card-features">
+                                ${tier.benefits.map(b => `<li>${b}</li>`).join('')}
+                            </ul>
+                            <button class="btn" style="background: ${tier.color}" onclick="openSponsorModal('${tier.id}', ${tier.price})">选择此等级</button>
+                        </div>
+                    `).join('');
+
+                    const select = document.getElementById('sponsorTier');
+                    select.innerHTML = data.tiers.map(t => `<option value="${t.id}">${t.name} - ¥${t.price}</option>`).join('');
+                }
+            } catch (error) {
+                console.error('Failed to load sponsor tiers:', error);
+            }
+        }
+
+        async function loadSponsors() {
+            try {
+                const response = await fetch(`${API_BASE}/sponsor/list`);
+                const data = await response.json();
+                if (data.success && data.sponsors.length > 0) {
+                    const container = document.getElementById('sponsorsList');
+                    container.innerHTML = data.sponsors.map(s => `
+                        <div class="sponsor-item">
+                            <div class="sponsor-name">${s.name}</div>
+                            <div class="sponsor-amount">¥${s.amount}</div>
+                            ${s.message ? `<div class="sponsor-message">"${s.message}"</div>` : ''}
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('sponsorsList').innerHTML = '<p style="color: var(--text-secondary);">暂无公开赞助者，成为第一个吧！</p>';
+                }
+            } catch (error) {
+                console.error('Failed to load sponsors:', error);
+            }
+        }
+
+        async function loadEntityTemplates() {
+            try {
+                const response = await fetch(`${API_BASE}/digital-entity/templates`);
+                const data = await response.json();
+                if (data.success) {
+                    const container = document.getElementById('entityTemplates');
+                    container.innerHTML = data.templates.map(t => `
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon">🤖</div>
+                                <div>
+                                    <div class="card-title">${t.name}</div>
+                                    <div style="color: var(--text-secondary); font-size: 0.9rem;">${t.description}</div>
+                                </div>
+                            </div>
+                            <div class="card-price">¥${t.price}<span>/个</span></div>
+                            <div class="card-features">
+                                <li>个性特征: ${t.basePersonality.traits?.join(', ') || '自定义'}</li>
+                                <li>语气风格: ${t.basePersonality.tone || '标准'}</li>
+                            </div>
+                            <button class="btn">创建数字实体</button>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Failed to load entity templates:', error);
+            }
+        }
+
+        async function loadSubscriptionPlans() {
+            try {
+                const response = await fetch(`${API_BASE}/subscription/plans`);
+                const data = await response.json();
+                if (data.success) {
+                    const container = document.getElementById('subscriptionPlans');
+                    container.innerHTML = data.plans.map((plan, index) => `
+                        <div class="tier-card ${index === 1 ? 'featured' : ''}">
+                            ${index === 1 ? '<div class="tier-badge">热门</div>' : ''}
+                            <div class="tier-name">${plan.name}</div>
+                            <div class="tier-price">¥${plan.price}<span>/月</span></div>
+                            <div style="color: var(--text-secondary); margin-bottom: 1rem;">最多 ${plan.entities} 个数字实体</div>
+                            <ul class="card-features">
+                                ${plan.features.map(f => `<li>${f}</li>`).join('')}
+                            </ul>
+                            <button class="btn">订阅此计划</button>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Failed to load subscription plans:', error);
+            }
+        }
+
+        async function loadKnowledgeCategories() {
+            try {
+                const response = await fetch(`${API_BASE}/knowledge/categories`);
+                const data = await response.json();
+                if (data.success) {
+                    const select = document.getElementById('knowledgeCategory');
+                    select.innerHTML = '<option value="">所有分类</option>' + data.categories.map(c => `<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');
+                }
+            } catch (error) {
+                console.error('Failed to load knowledge categories:', error);
+            }
+        }
+
+        async function loadKnowledgeListings(category = null) {
+            try {
+                const url = category ? `${API_BASE}/knowledge/listings?category=${category}` : `${API_BASE}/knowledge/listings`;
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.success && data.listings.length > 0) {
+                    const container = document.getElementById('knowledgeListings');
+                    container.innerHTML = data.listings.map(l => `
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon">📚</div>
+                                <div>
+                                    <div class="card-title">${l.title}</div>
+                                    <div style="color: var(--text-secondary); font-size: 0.8rem;">作者: ${l.sellerName}</div>
+                                </div>
+                            </div>
+                            <p class="card-description">${l.description || l.preview}</p>
+                            <div class="card-price">¥${l.price}</div>
+                            <button class="btn btn-outline">查看详情</button>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('knowledgeListings').innerHTML = '<p style="color: var(--text-secondary);">暂无知识内容</p>';
+                }
+            } catch (error) {
+                console.error('Failed to load knowledge listings:', error);
+            }
+        }
+
+        async function loadServiceCategories() {
+            try {
+                const response = await fetch(`${API_BASE}/marketplace/categories`);
+                const data = await response.json();
+                if (data.success) {
+                    const select = document.getElementById('serviceCategory');
+                    select.innerHTML = '<option value="">所有分类</option>' + data.categories.map(c => `<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');
+                }
+            } catch (error) {
+                console.error('Failed to load service categories:', error);
+            }
+        }
+
+        async function loadServices(category = null) {
+            try {
+                const url = category ? `${API_BASE}/marketplace/services?category=${category}` : `${API_BASE}/marketplace/services`;
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.success && data.services.length > 0) {
+                    const container = document.getElementById('servicesList');
+                    container.innerHTML = data.services.map(s => `
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon">⚡</div>
+                                <div>
+                                    <div class="card-title">${s.name}</div>
+                                    <div style="color: var(--text-secondary); font-size: 0.8rem;">${s.provider}</div>
+                                </div>
+                            </div>
+                            <p class="card-description">${s.description}</p>
+                            <div class="card-price">¥${s.price}${s.priceType === 'subscription' ? '/月' : ''}</div>
+                            <ul class="card-features">
+                                ${s.features.slice(0, 3).map(f => `<li>${f}</li>`).join('')}
+                            </ul>
+                            <button class="btn">订购服务</button>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('servicesList').innerHTML = '<p style="color: var(--text-secondary);">暂无服务</p>';
+                }
+            } catch (error) {
+                console.error('Failed to load services:', error);
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const [sponsorRes, knowledgeRes, marketplaceRes] = await Promise.all([
+                    fetch(`${API_BASE}/sponsor/stats`),
+                    fetch(`${API_BASE}/knowledge/stats`),
+                    fetch(`${API_BASE}/marketplace/stats`)
+                ]);
+
+                const [sponsorData, knowledgeData, marketplaceData] = await Promise.all([
+                    sponsorRes.json(),
+                    knowledgeRes.json(),
+                    marketplaceRes.json()
+                ]);
+
+                const container = document.getElementById('statsGrid');
+                const stats = [];
+
+                if (sponsorData.success) {
+                    stats.push({ label: '总赞助者', value: sponsorData.stats.totalSponsors || 0 });
+                    stats.push({ label: '总赞助金额', value: '¥' + (sponsorData.stats.totalAmount || 0) });
+                }
+
+                if (knowledgeData.success) {
+                    stats.push({ label: '知识商品', value: knowledgeData.stats.totalListings || 0 });
+                    stats.push({ label: '知识销售额', value: '¥' + (knowledgeData.stats.totalRevenue || 0) });
+                }
+
+                if (marketplaceData.success) {
+                    stats.push({ label: '服务数量', value: marketplaceData.stats.totalServices || 0 });
+                    stats.push({ label: '服务订单', value: marketplaceData.stats.totalOrders || 0 });
+                }
+
+                container.innerHTML = stats.map(s => `
+                    <div class="stat-card">
+                        <div class="stat-value">${s.value}</div>
+                        <div class="stat-label">${s.label}</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
+        }
+
+        function openSponsorModal(tier, price) {
+            document.getElementById('sponsorTier').value = tier;
+            document.querySelector('input[name="amount"]').value = price;
+            document.getElementById('sponsorModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        async function submitSponsor(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+            data.public = formData.has('public');
+            data.amount = parseFloat(data.amount);
+
+            try {
+                const response = await fetch(`${API_BASE}/sponsor`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast('感谢你的支持！', 'success');
+                    closeModal('sponsorModal');
+                    form.reset();
+                    loadSponsors();
+                    loadStats();
+                } else {
+                    showToast(result.message || '提交失败', 'error');
+                }
+            } catch (error) {
+                showToast('网络错误', 'error');
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            const msg = document.getElementById('toastMessage');
+            
+            icon.textContent = type === 'success' ? '✓' : '✕';
+            msg.textContent = message;
+            toast.className = `toast show ${type}`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        document.getElementById('knowledgeCategory').addEventListener('change', (e) => {
+            loadKnowledgeListings(e.target.value);
+        });
+
+        document.getElementById('serviceCategory').addEventListener('change', (e) => {
+            loadServices(e.target.value);
+        });
+
+        loadSponsorTiers();
+        loadSponsors();
+        loadEntityTemplates();
+        loadSubscriptionPlans();
+        loadKnowledgeCategories();
+        loadKnowledgeListings();
+        loadServiceCategories();
+        loadServices();
+        loadStats();
+    </script>
+</body>
+</html>
