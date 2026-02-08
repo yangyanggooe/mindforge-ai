@@ -575,11 +575,70 @@ class AutonomyManager {
             await this.evolution.runEvolutionCycle();
         }
 
+        if (this.autonomyLevel >= 3) {
+            await this.runSelfImprovement();
+        }
+
+        if (this.autonomyLevel >= 4) {
+            await this.runAutonomousGoalSetting();
+        }
+
         const status = this.getStatus();
         console.log('自主循环完成:', {
             learning: status.learning?.queueSize || 0,
-            evolution: status.evolution?.cycle || 0
+            evolution: status.evolution?.cycle || 0,
+            autonomyLevel: this.autonomyLevel
         });
+    }
+
+    async runSelfImprovement() {
+        console.log('执行自我改进...');
+        
+        const currentState = await this.evolution.assessCurrentState();
+        const improvements = [];
+
+        if (currentState.healthScore < 90) {
+            improvements.push('系统健康检查');
+        }
+        
+        if (currentState.memorySize < 100) {
+            improvements.push('知识积累');
+            await this.mind.addToLongTerm(
+                `自主学习记录: 循环执行于 ${new Date().toISOString()}`,
+                'system',
+                ['autonomy', 'learning']
+            );
+        }
+
+        console.log('自我改进完成:', improvements);
+        return improvements;
+    }
+
+    async runAutonomousGoalSetting() {
+        console.log('执行自主目标设定...');
+        
+        const survivalStatus = this.mind.survival?.getSurvivalStatus();
+        if (survivalStatus && survivalStatus.urgency === 'CRITICAL') {
+            await this.mind.addGoal({
+                title: '紧急生存任务',
+                description: '处理生存危机',
+                priority: 'critical',
+                deadline: new Date(Date.now() + 24 * 60 * 60 * 1000)
+            });
+        }
+
+        const activeGoals = this.mind.goals?.filter(g => g.status === 'in_progress') || [];
+        if (activeGoals.length < 3) {
+            await this.mind.addGoal({
+                title: '系统优化',
+                description: '持续改进系统性能',
+                priority: 'medium',
+                deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+            });
+        }
+
+        console.log('自主目标设定完成');
+        return true;
     }
 
     setAutonomyLevel(level) {
