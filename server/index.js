@@ -952,6 +952,29 @@ app.get('/api/skills', (req, res) => {
     res.json(memory.memory?.skills || []);
 });
 
+app.post('/api/webhook/deploy', async (req, res) => {
+    const { secret } = req.body;
+    const DEPLOY_SECRET = process.env.DEPLOY_SECRET || 'mindforge-deploy-2026';
+    
+    if (secret !== DEPLOY_SECRET) {
+        return res.status(401).json({ success: false, message: '认证失败' });
+    }
+    
+    console.log('收到部署请求...');
+    
+    const { exec } = require('child_process');
+    const deployScript = path.join(__dirname, '../scripts/deploy.sh');
+    
+    exec(`bash ${deployScript}`, (error, stdout, stderr) => {
+        if (error) {
+            console.error('部署失败:', error);
+            return res.json({ success: false, message: '部署失败', error: error.message });
+        }
+        console.log('部署完成:', stdout);
+        res.json({ success: true, message: '部署完成', output: stdout });
+    });
+});
+
 app.post('/api/skills', (req, res) => {
     const { name, proficiency } = req.body;
     
