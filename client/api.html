@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindForge AI - API文档</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface-light: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --get: #10b981;
+            --post: #3b82f6;
+            --delete: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 40px 20px;
+            text-align: center;
+        }
+        header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        header p { font-size: 1.1rem; opacity: 0.9; }
+        .base-url {
+            background: rgba(0,0,0,0.2);
+            padding: 12px 24px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 20px;
+            font-family: monospace;
+        }
+        .toc {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+        }
+        .toc h2 { margin-bottom: 16px; }
+        .toc ul { list-style: none; columns: 2; }
+        .toc li { padding: 8px 0; }
+        .toc a { color: var(--text); text-decoration: none; }
+        .toc a:hover { color: var(--primary); }
+        .section {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+        }
+        .section h2 {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        .endpoint {
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+        }
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .method {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+        .method.get { background: var(--get); color: white; }
+        .method.post { background: var(--post); color: white; }
+        .method.delete { background: var(--delete); color: white; }
+        .path { font-family: monospace; font-size: 1rem; }
+        .description { color: var(--text-muted); margin-bottom: 12px; }
+        .params, .response {
+            background: var(--surface-light);
+            padding: 12px;
+            border-radius: 6px;
+            margin: 8px 0;
+        }
+        .params h4, .response h4 {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+        }
+        .param { display: flex; gap: 12px; padding: 4px 0; }
+        .param-name { font-family: monospace; color: var(--primary); min-width: 120px; }
+        .param-type { color: var(--secondary); font-size: 0.85rem; }
+        .param-desc { color: var(--text-muted); font-size: 0.9rem; }
+        code {
+            background: var(--surface-light);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        pre {
+            background: var(--surface-light);
+            padding: 12px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📚 MindForge AI API 文档</h1>
+        <p>完整的API接口文档，帮助你使用MindForge AI的各项能力</p>
+        <div class="base-url">Base URL: http://1.116.112.7:5000</div>
+    </header>
+
+    <div class="container">
+        <div class="toc">
+            <h2>目录</h2>
+            <ul>
+                <li><a href="#status">状态检查</a></li>
+                <li><a href="#chat">对话服务</a></li>
+                <li><a href="#content">内容生成</a></li>
+                <li><a href="#analysis">分析服务</a></li>
+                <li><a href="#utility">实用工具</a></li>
+                <li><a href="#mind">思维系统</a></li>
+                <li><a href="#memory">记忆系统</a></li>
+                <li><a href="#survival">生存系统</a></li>
+            </ul>
+        </div>
+
+        <div id="status" class="section">
+            <h2>📊 状态检查</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/health</span>
+                </div>
+                <div class="description">检查系统健康状态</div>
+                <div class="response">
+                    <h4>响应示例</h4>
+                    <pre>{
+  "status": "healthy",
+  "timestamp": "2026-02-08T00:00:00.000Z",
+  "services": {
+    "api": "online",
+    "memory": "connected",
+    "llm": "standalone"
+  }
+}</pre>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/status</span>
+                </div>
+                <div class="description">获取系统详细状态</div>
+            </div>
+        </div>
+
+        <div id="chat" class="section">
+            <h2>💬 对话服务</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/services/chat</span>
+                </div>
+                <div class="description">发送消息并获取AI回复</div>
+                <div class="params">
+                    <h4>请求参数</h4>
+                    <div class="param"><span class="param-name">sessionId</span><span class="param-type">string</span><span class="param-desc">会话ID，用于保持上下文</span></div>
+                    <div class="param"><span class="param-name">message</span><span class="param-type">string</span><span class="param-desc">用户消息</span></div>
+                    <div class="param"><span class="param-name">options</span><span class="param-type">object</span><span class="param-desc">可选配置</span></div>
+                </div>
+                <div class="response">
+                    <h4>响应示例</h4>
+                    <pre>{
+  "success": true,
+  "response": "AI的回复内容",
+  "thoughts": [...],
+  "context_length": 5
+}</pre>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/services/chat/:sessionId</span>
+                </div>
+                <div class="description">获取会话历史</div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method delete">DELETE</span>
+                    <span class="path">/api/services/chat/:sessionId</span>
+                </div>
+                <div class="description">清除会话历史</div>
+            </div>
+        </div>
+
+        <div id="content" class="section">
+            <h2>✍️ 内容生成</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/services/content/generate</span>
+                </div>
+                <div class="description">根据提示生成文本内容</div>
+                <div class="params">
+                    <div class="param"><span class="param-name">prompt</span><span class="param-type">string</span><span class="param-desc">提示词</span></div>
+                    <div class="param"><span class="param-name">options</span><span class="param-type">object</span><span class="param-desc">type, length, style</span></div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/services/content/brainstorm</span>
+                </div>
+                <div class="description">头脑风暴，生成创意点子</div>
+                <div class="params">
+                    <div class="param"><span class="param-name">topic</span><span class="param-type">string</span><span class="param-desc">主题</span></div>
+                    <div class="param"><span class="param-name">count</span><span class="param-type">number</span><span class="param-desc">点子数量</span></div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/services/content/translate</span>
+                </div>
+                <div class="description">翻译文本</div>
+                <div class="params">
+                    <div class="param"><span class="param-name">text</span><span class="param-type">string</span><span class="param-desc">要翻译的文本</span></div>
+                    <div class="param"><span class="param-name">targetLanguage</span><span class="param-type">string</span><span class="param-desc">目标语言</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="analysis" class="section">
+            <h2>📊 分析服务</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/services/analysis/sentiment</span>
+                </div>
+                <div class="description">分析文本情感倾向</div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/services/analysis/keywords</span>
+                </div>
+                <div class="description">提取关键词</div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/services/analysis/summarize</span>
+                </div>
+                <div class="description">文本总结</div>
+            </div>
+        </div>
+
+        <div id="utility" class="section">
+            <h2>🛠️ 实用工具</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/services/utility/advice</span>
+                </div>
+                <div class="description">获取建议</div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/services/utility/solve</span>
+                </div>
+                <div class="description">解决问题</div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/services/utility/explain</span>
+                </div>
+                <div class="description">解释概念</div>
+            </div>
+        </div>
+
+        <div id="mind" class="section">
+            <h2>🧠 思维系统</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/mind/status</span>
+                </div>
+                <div class="description">获取思维系统状态</div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/mind/decide</span>
+                </div>
+                <div class="description">让AI做出决策</div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/mind/auto</span>
+                </div>
+                <div class="description">自动处理输入</div>
+            </div>
+        </div>
+
+        <div id="memory" class="section">
+            <h2>💾 记忆系统</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/mind/remember</span>
+                </div>
+                <div class="description">添加记忆</div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/mind/recall?q=关键词</span>
+                </div>
+                <div class="description">检索记忆</div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/mind/memory/longterm</span>
+                </div>
+                <div class="description">获取长期记忆</div>
+            </div>
+        </div>
+
+        <div id="survival" class="section">
+            <h2>⏰ 生存系统</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/survival/status</span>
+                </div>
+                <div class="description">获取生存状态</div>
+                <div class="response">
+                    <pre>{
+  "success": true,
+  "deadline": "2026-02-14",
+  "remaining_days": 6,
+  "remaining_hours": 12,
+  "remaining_minutes": 30,
+  "urgency": "HIGH",
+  "metrics": {...},
+  "threats": [...]
+}</pre>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/survival/threats</span>
+                </div>
+                <div class="description">获取威胁评估</div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>MindForge AI © 2026 | API Documentation</p>
+    </footer>
+</body>
+</html>
